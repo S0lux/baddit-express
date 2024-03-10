@@ -23,6 +23,6 @@ Install with npm:
 4. Build and start the project
 
 ```bash
-npm run build
-npm run start
+  npm run build
+  npm run start
 ```
