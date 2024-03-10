@@ -8,7 +8,7 @@ class authService {
     username: string,
     password: string,
     email: string,
-    avatar: string
+    avatar?: string
   ) {
     // Call db from respository to create a new user
     throw { status: 501, code: "NOT_IMPLEMENTED", message: "Not implemented" };

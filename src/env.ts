@@ -4,6 +4,7 @@ import { z } from "zod";
 const envSchema = z.object({
   PORT: z.string().min(1),
   DOMAIN: z.string().min(1),
+  DATABASE_URL: z.string().min(1),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
