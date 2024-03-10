@@ -10,7 +10,9 @@ const loginUser = async (req: Request, res: Response) => {
   const parsedResult = loginBodyValidator.safeParse(req.body);
 
   if (!parsedResult.success) {
-    return res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({
+      error: { code: "BAD_REQUEST", message: "Invalid request body" },
+    });
   }
 
   try {
@@ -35,7 +37,9 @@ const registerUser = async (req: Request, res: Response) => {
   const parsedResult = registerBodyValidator.safeParse(req.body);
 
   if (!parsedResult.success) {
-    return res.status(400).json({ error: "Bad request" });
+    return res.status(400).json({
+      error: { code: "BAD_REQUEST", message: "Invalid request body" },
+    });
   }
 
   const { username, password, email, avatar } = parsedResult.data;
