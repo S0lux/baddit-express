@@ -1,10 +1,12 @@
 import "dotenv/config";
-import { z } from "zod";
+import z from "zod";
 
 const envSchema = z.object({
   PORT: z.string().min(1),
   DOMAIN: z.string().min(1),
   DATABASE_URL: z.string().min(1),
+  REDIS_URL: z.string().min(1),
+  COOKIE_SECRET: z.string().min(1),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

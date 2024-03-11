@@ -11,6 +11,16 @@ const createUser = async (data: {
   return await prisma.user.create({ data });
 };
 
+const getUserByUsername = async (username: string) => {
+  return await prisma.user.findUnique({ where: { username } });
+};
+
+const getUserById = async (id: string) => {
+  return await prisma.user.findUnique({ where: { id } });
+};
+
 export const authRepository = {
   createUser,
+  getUserByUsername,
+  getUserById,
 };
