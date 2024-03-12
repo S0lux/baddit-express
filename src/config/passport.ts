@@ -46,14 +46,3 @@ passport.deserializeUser((id: string, done) => {
     })
     .catch((err) => done(err));
 });
-
-declare global {
-  namespace Express {
-    interface User {
-      id: string;
-      username: string;
-      email: string;
-      avatarUrl: string;
-    }
-  }
-}

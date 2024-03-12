@@ -6,6 +6,14 @@ import https from "https";
 
 const PORT = process.env.PORT;
 
+declare global {
+  namespace Express {
+    interface User {
+      id: string;
+    }
+  }
+}
+
 const httpsOptions = {
   cert: fs.readFileSync("./ssl/domain.cert.pem"),
   key: fs.readFileSync("./ssl/private.key.pem"),

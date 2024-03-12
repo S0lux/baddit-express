@@ -1,6 +1,8 @@
 import express, { Application } from "express";
 import morgan from "morgan";
+
 import authRouter from "./routes/authRoutes";
+import userRouter from "./routes/userRoutes";
 
 import passport from "passport";
 import session from "express-session";
@@ -50,6 +52,7 @@ app.use(passport.session());
 
 // Register routes
 app.use("/v1/auth", authRouter);
+app.use("/v1/user", userRouter);
 
 // Catch-all route
 app.all("*", (req, res) => {

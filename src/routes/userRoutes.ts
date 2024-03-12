@@ -12,3 +12,5 @@ router.post(
   parser.single("avatar"),
   userController.updateAvatar
 );
+
+export default router;
