@@ -3,7 +3,7 @@ import { handleServiceError } from "../utils/handleServiceError";
 import userService from "../services/userService";
 
 const getMe = (req: Request, res: Response) => {
-  return res.status(200).json({ user: req.user });
+  res.status(200).json({ user: req.user });
 };
 
 const updateAvatar = (req: Request, res: Response) => {

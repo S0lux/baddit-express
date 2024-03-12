@@ -29,7 +29,7 @@ const strategy = new LocalStrategy(function verify(username, password, done) {
 passport.use(strategy);
 
 passport.serializeUser((user: any, done) => {
-  done(null, user.id);
+  return done(null, user.id);
 });
 
 passport.deserializeUser((id: string, done) => {
@@ -42,7 +42,7 @@ passport.deserializeUser((id: string, done) => {
         email: user?.email,
         avatarUrl: user?.avatarUrl,
       };
-      done(null, newUser as Express.User);
+      return done(null, newUser as Express.User);
     })
     .catch((err) => done(err));
 });

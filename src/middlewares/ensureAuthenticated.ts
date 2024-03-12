@@ -5,9 +5,9 @@ const ensureAuthenticated = (
   res: Response,
   next: NextFunction
 ) => {
-  if (req.user) next();
+  if (req.user) return next();
 
-  return res.status(401).json({
+  res.status(401).json({
     error: { code: "UNAUTHORIZED", message: "You are not logged in" },
   });
 };
