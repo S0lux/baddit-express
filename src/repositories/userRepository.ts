@@ -7,7 +7,7 @@ const createUser = async (data: {
   hashedPassword: string;
   email: string;
 }) => {
-  return await prisma.user.create({ data });
+  return await prisma.user.create({ data }).catch((error) => null);
 };
 
 const getUserByUsername = async (username: string) => {

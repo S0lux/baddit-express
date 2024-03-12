@@ -17,11 +17,12 @@ class authService {
       hashedPassword: hashedPassword,
     };
 
-    const newUser = userRepository.createUser(data);
+    const newUser = await userRepository.createUser(data);
 
     if (!newUser)
       throw {
-        code: "BAD_CREDETIALS",
+        status: 409,
+        code: "BAD_CREDENTIALS",
         message: "Email or username is already taken.",
       };
   }
