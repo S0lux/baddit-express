@@ -11,16 +11,19 @@ class authService {
     email: string;
   }) {
     const hashedPassword = generateHash(userData.password);
+    const data = {
+      username: userData.username,
+      email: userData.email,
+      hashedPassword: hashedPassword,
+    };
 
-    userRepository
-      .createUser({ ...userData, hashedPassword: hashedPassword })
-      .catch((error) => {
-        // Stupid I know
-        throw {
-          code: "BAD_CREDETIALS",
-          message: "Email or username is already taken.",
-        };
-      });
+    const newUser = userRepository.createUser(data);
+
+    if (!newUser)
+      throw {
+        code: "BAD_CREDETIALS",
+        message: "Email or username is already taken.",
+      };
   }
 }
 
