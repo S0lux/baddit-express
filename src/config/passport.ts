@@ -20,6 +20,8 @@ const strategy = new LocalStrategy(function verify(username, password, done) {
         username: user?.username,
         email: user?.email,
         avatarUrl: user?.avatarUrl,
+        emailVerified: user?.emailVerified,
+        registeredAt: user?.registeredAt,
       };
       return done(null, newUser);
     })
@@ -41,6 +43,8 @@ passport.deserializeUser((id: string, done) => {
         username: user?.username,
         email: user?.email,
         avatarUrl: user?.avatarUrl,
+        emailVerified: user?.emailVerified,
+        registeredAt: user?.registeredAt,
       };
       return done(null, newUser as Express.User);
     })

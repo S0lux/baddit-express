@@ -14,9 +14,21 @@ datasource db {
 }
 
 model User {
-  id             String  @id @default(uuid())
-  email          String  @unique
-  username       String  @unique
+  id             String       @id @default(uuid())
+  email          String       @unique
+  username       String       @unique
   hashedPassword String
-  avatarUrl      String  @default("https://placehold.co/100x100/orange/white?text=avatar")
+  avatarUrl      String       @default("https://placehold.co/100x100/orange/white?text=avatar")
+  emailVerified  Boolean      @default(false)
+  registeredAt   DateTime     @default(now())
+  emailTokens    EmailToken[]
+}
+
+model EmailToken {
+  id        String   @id @default(uuid())
+  User      User     @relation(fields: [userId], references: [id])
+  userId    String
+  token     String
+  expires   DateTime
+  createdAt DateTime @default(now())
 }
