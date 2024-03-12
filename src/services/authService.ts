@@ -9,7 +9,6 @@ class authService {
     username: string;
     password: string;
     email: string;
-    avatar?: string;
   }) {
     const hashedPassword = generateHash(userData.password);
 

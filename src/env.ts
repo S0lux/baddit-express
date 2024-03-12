@@ -7,6 +7,9 @@ const envSchema = z.object({
   DATABASE_URL: z.string().min(1),
   REDIS_URL: z.string().min(1),
   COOKIE_SECRET: z.string().min(1),
+  CLOUDINARY_NAME: z.string().min(1),
+  CLOUDINARY_KEY: z.string().min(1),
+  CLOUDINARY_SECRET: z.string().min(1),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
