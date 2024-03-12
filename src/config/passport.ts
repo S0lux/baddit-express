@@ -1,12 +1,12 @@
 import passportLocal from "passport-local";
-import { authRepository } from "../repositories/authRepository";
+import { userRepository } from "../repositories/userRepository";
 import { compareHash } from "../utils/hashFunctions";
 import passport from "passport";
 
 const LocalStrategy = passportLocal.Strategy;
 
 const strategy = new LocalStrategy(function verify(username, password, done) {
-  authRepository
+  userRepository
     .getUserByUsername(username)
     .then((user) => {
       if (!user) {
@@ -33,7 +33,7 @@ passport.serializeUser((user: any, done) => {
 });
 
 passport.deserializeUser((id: string, done) => {
-  authRepository
+  userRepository
     .getUserById(id)
     .then((user) => {
       const newUser = {
@@ -42,7 +42,18 @@ passport.deserializeUser((id: string, done) => {
         email: user?.email,
         avatarUrl: user?.avatarUrl,
       };
-      done(null, newUser);
+      done(null, newUser as Express.User);
     })
     .catch((err) => done(err));
 });
+
+declare global {
+  namespace Express {
+    interface User {
+      id: string;
+      username: string;
+      email: string;
+      avatarUrl: string;
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { authRepository } from "../repositories/authRepository";
+import { userRepository } from "../repositories/userRepository";
 import { generateHash } from "../utils/hashFunctions";
 
 class authService {
@@ -12,7 +12,7 @@ class authService {
   }) {
     const hashedPassword = generateHash(userData.password);
 
-    authRepository
+    userRepository
       .createUser({ ...userData, hashedPassword: hashedPassword })
       .catch((error) => {
         // Stupid I know

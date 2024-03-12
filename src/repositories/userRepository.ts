@@ -6,7 +6,6 @@ const createUser = async (data: {
   username: string;
   hashedPassword: string;
   email: string;
-  avatar?: string;
 }) => {
   return await prisma.user.create({ data });
 };
@@ -19,8 +18,16 @@ const getUserById = async (id: string) => {
   return await prisma.user.findUnique({ where: { id } });
 };
 
-export const authRepository = {
+const updateAvatar = async (id: string, avatar: string) => {
+  return await prisma.user.update({
+    where: { id },
+    data: { avatarUrl: avatar },
+  });
+};
+
+export const userRepository = {
   createUser,
   getUserByUsername,
   getUserById,
+  updateAvatar,
 };
