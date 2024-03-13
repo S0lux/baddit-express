@@ -6,22 +6,17 @@ const getMe = (req: Request, res: Response) => {
   res.status(200).json({ user: req.user });
 };
 
-const updateAvatar = (req: Request, res: Response) => {
-  console.log("Hello!!");
+const updateAvatar = async (req: Request, res: Response) => {
   try {
     if (!req.file) {
-      throw {
-        status: 400,
-        code: "NO_FILE_PROVIDED",
-        message: "No file provided.",
-      };
+      throw new Error("Avatar is required");
     }
 
-    userService.updateUserAvatar(req.user!.id, req.file.path);
+    await userService.updateUserAvatar(req.user!.id, req.file.path);
 
-    return res.status(200).json({ avatar: req.file.path });
-  } catch (error) {
-    handleServiceError(res, error);
+    res.status(200).json({ message: "Avatar updated successfully" });
+  } catch (err) {
+    handleServiceError(res, err);
   }
 };
 

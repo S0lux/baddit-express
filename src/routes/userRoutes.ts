@@ -1,16 +1,18 @@
 import express from "express";
 import { userController } from "../controllers/userController";
 import ensureAuthenticated from "../middlewares/ensureAuthenticated";
-import { uploadAvatar } from "../middlewares/uploadAvatar";
+import { avatarParser } from "../middlewares/multerParsers";
+import handleMulterError from "../middlewares/handleMulterError";
 
 const router = express.Router();
 
-router.get("/me", ensureAuthenticated, userController.getMe);
+router.use(ensureAuthenticated);
+router.get("/me", userController.getMe);
 router.post(
   "/avatar",
-  ensureAuthenticated,
-  uploadAvatar,
-  userController.updateAvatar
+  avatarParser.single("avatar"),
+  userController.updateAvatar,
+  handleMulterError
 );
 
 export default router;
