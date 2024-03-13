@@ -7,6 +7,7 @@ const getMe = (req: Request, res: Response) => {
 };
 
 const updateAvatar = (req: Request, res: Response) => {
+  console.log("Hello!!");
   try {
     if (!req.file) {
       throw {

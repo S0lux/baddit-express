@@ -8,44 +8,19 @@ import userRouter from "./routes/userRoutes";
 import passport from "passport";
 import session from "express-session";
 
-import RedisStore from "connect-redis";
-import { createClient } from "redis";
-
 const app: Application = express();
 
-let redisClient = createClient({
-  url: process.env.REDIS_URL,
-});
-
-redisClient
-  .connect()
-  .catch(console.error)
-  .then(() => console.log("Connected to Redis"));
-
-let redisStore = new RedisStore({
-  client: redisClient,
-  prefix: "sess:",
-});
-
 // CORS
-const corsOptions = require("./config/cors");
-app.use(cors(corsOptions.corsOptions));
+const { corsOptions } = require("./config/cors");
+app.use(cors(corsOptions));
+
+// Basic middlewares
 app.use(morgan("dev"));
 app.use(express.json());
-app.use(
-  session({
-    store: redisStore,
-    secret: process.env.COOKIE_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: process.env.ENV === "PRODUCTION",
-      httpOnly: true,
-      //domain: process.env.COOKIE_DOMAIN,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-    },
-  })
-);
+
+// Session configuration
+const { sessionOptions } = require("./config/session");
+app.use(session(sessionOptions));
 
 // Initialize passport and local strategy
 require("./config/passport");
