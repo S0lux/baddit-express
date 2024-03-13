@@ -1,4 +1,5 @@
 import RedisStore from "connect-redis";
+import { SessionOptions } from "express-session";
 import { createClient } from "redis";
 
 let redisClient = createClient({
@@ -15,7 +16,7 @@ let redisStore = new RedisStore({
   prefix: "sess:",
 });
 
-const sessionOptions = {
+const sessionOptions: SessionOptions = {
   store: redisStore,
   secret: process.env.COOKIE_SECRET,
   resave: false,
@@ -25,6 +26,7 @@ const sessionOptions = {
     httpOnly: true,
     //domain: process.env.COOKIE_DOMAIN,
     maxAge: 1000 * 60 * 60 * 24 * 7,
+    sameSite: "none",
   },
 };
 
