@@ -1,5 +1,6 @@
 import express, { Application } from "express";
 import morgan from "morgan";
+import cors from "cors";
 
 import authRouter from "./routes/authRoutes";
 import userRouter from "./routes/userRoutes";
@@ -26,7 +27,9 @@ let redisStore = new RedisStore({
   prefix: "sess:",
 });
 
-// Basic express setup
+// CORS
+const corsOptions = require("./config/cors");
+app.use(cors(corsOptions.corsOptions));
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(
@@ -36,9 +39,9 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false,
+      secure: process.env.ENV === "PRODUCTION",
       httpOnly: true,
-      domain: process.env.COOKIE_DOMAIN,
+      //domain: process.env.COOKIE_DOMAIN,
       maxAge: 1000 * 60 * 60 * 24 * 7,
     },
   })

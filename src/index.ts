@@ -24,6 +24,8 @@ https.createServer(httpsOptions, app).listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-http.createServer(app).listen(3000, () => {
-  console.log(`Server is running on port 3000`);
-});
+if (process.env.ENV === "DEV") {
+  http.createServer(app).listen(3001, () => {
+    console.log(`Server is running on port 3001`);
+  });
+}

@@ -10,6 +10,7 @@ const envSchema = z.object({
   CLOUDINARY_NAME: z.string().min(1),
   CLOUDINARY_KEY: z.string().min(1),
   CLOUDINARY_SECRET: z.string().min(1),
+  ENV: z.enum(["DEV", "PRODUCTION"]),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
