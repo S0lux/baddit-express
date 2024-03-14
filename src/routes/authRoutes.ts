@@ -2,6 +2,7 @@ import express from "express";
 import { authController } from "../controllers/authController";
 import passport, { AuthenticateOptions } from "passport";
 import handleAuthError from "../middlewares/handleAuthError";
+import { verify } from "crypto";
 
 const router = express.Router();
 
@@ -17,6 +18,11 @@ router.post(
   authController.loginUser,
   handleAuthError
 );
+
+router.post(
+  "/verification",
+  authController.verifyEmail
+)
 
 router.post("/signup", authController.registerUser);
 router.post("/logout", authController.logoutUser);
