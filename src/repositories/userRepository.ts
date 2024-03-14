@@ -15,7 +15,10 @@ const getUserByUsername = async (username: string) => {
 };
 
 const getUserById = async (id: string) => {
-  return await prisma.user.findUnique({ where: { id } });
+  return await prisma.user.findUnique({
+    where: { id },
+    include: { emailTokens: true },
+  });
 };
 
 const updateAvatar = async (id: string, avatar: string) => {
@@ -25,9 +28,23 @@ const updateAvatar = async (id: string, avatar: string) => {
   });
 };
 
+const addEmailToken = async (userId: string, token: string, expireAt: Date) => {
+  return await prisma.emailToken.create({
+    data: { token, expireAt, userId },
+  });
+};
+
+const cleanUpTokens = async () => {
+  return await prisma.emailToken.deleteMany({
+    where: { expireAt: { lte: new Date() } },
+  });
+};
+
 export const userRepository = {
   createUser,
   getUserByUsername,
   getUserById,
   updateAvatar,
+  cleanUpTokens,
+  addEmailToken,
 };

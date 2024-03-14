@@ -11,6 +11,9 @@ const envSchema = z.object({
   CLOUDINARY_KEY: z.string().min(1),
   CLOUDINARY_SECRET: z.string().min(1),
   ENV: z.enum(["DEV", "PRODUCTION"]),
+  AWS_ACCESS_KEY_ID: z.string().min(1),
+  AWS_SECRET_ACCESS_KEY: z.string().min(1),
+  AWS_REGION: z.string().min(1),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

@@ -29,6 +29,6 @@ model EmailToken {
   User      User     @relation(fields: [userId], references: [id])
   userId    String
   token     String
-  expires   DateTime
+  expireAt  DateTime
   createdAt DateTime @default(now())
 }

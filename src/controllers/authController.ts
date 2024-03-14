@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { registerBodyValidator } from "../validators/authValidators";
 import authService from "../services/authService";
 import { handleServiceError } from "../utils/handleServiceError";
+import awsService from "../services/awsService";
 
 const loginUser = async (req: Request, res: Response) => {
   return res.status(200).json({ user: req.user });
@@ -17,7 +18,8 @@ const registerUser = async (req: Request, res: Response) => {
   }
 
   try {
-    await authService.register(parsedResult.data);
+    const newUser = await authService.register(parsedResult.data);
+    await awsService.sendVerificationEmail(newUser.id);
     return res.status(201).json({ message: "Email sent" });
   } catch (error) {
     handleServiceError(res, error);

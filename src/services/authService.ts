@@ -25,6 +25,8 @@ class authService {
         code: "BAD_CREDENTIALS",
         message: "Email or username is already taken.",
       };
+
+    return newUser;
   }
 }
 
