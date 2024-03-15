@@ -3,7 +3,6 @@ import { registerBodyValidator } from "../validators/authValidators";
 import authService from "../services/authService";
 import { handleServiceError } from "../utils/handleServiceError";
 import awsService from "../services/awsService";
-import { userRepository } from "../repositories/userRepository";
 
 const loginUser = async (req: Request, res: Response) => {
   return res.status(200).json({ user: req.user });
@@ -44,7 +43,6 @@ const verifyEmail = async(req:Request , res:Response)=>{
     handleServiceError(res,err);
   }
 }
-
 
 export const authController = {
   loginUser,
