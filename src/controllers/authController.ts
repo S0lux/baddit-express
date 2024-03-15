@@ -38,26 +38,8 @@ const verifyEmail = async(req:Request , res:Response)=>{
   const tokenToCheck = req.body["token"]
   if(tokenToCheck)
   {
-    const listTokens = await userRepository.getEmailTokens();
-    for(let i = 0 ; i < listTokens.length ; i++){
-      if(listTokens[i].token === tokenToCheck){
-        if(listTokens[i].expireAt.getTime >= Date.now){
-          userRepository.updateEmailVerified(listTokens[i].userId);
-          return res.status(200).json({
-            success: { message: "Email Verified !"}
-          })
-        }
-        else{
-          return res.status(498).json({
-            error: {message: "Token expired !"}
-          })
-        }
-      }
-    }
+    
   }
-  return res.status(498).json({
-    error: {message: "Invalid token !"}
-  })
 }
 
 

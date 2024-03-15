@@ -2,8 +2,6 @@ import express from "express";
 import { authController } from "../controllers/authController";
 import passport, { AuthenticateOptions } from "passport";
 import handleAuthError from "../middlewares/handleAuthError";
-import { verify } from "crypto";
-
 const router = express.Router();
 
 const authenticateOptions: AuthenticateOptions = {
