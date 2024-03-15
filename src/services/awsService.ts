@@ -60,6 +60,31 @@ class emailService {
       };
     }
   }
+
+  async verifyEmailToken(token:string, userId:string){
+    const tokenArray = await userRepository.getEmailTokens(userId);  
+    const matchedToken = tokenArray.find(element=> element.token === token)
+    /*matched*/
+    if(matchedToken){
+      if(matchedToken.expireAt.getTime >= Date.now){
+        await userRepository.updateEmailVerified(userId);
+      }
+      else{
+        throw{
+          status:498,
+          code:"TOKEN_EXPIRED",
+          message:"Token is expired"
+        }
+      }
+    }
+    /*not matched*/
+    if(!matchedToken)
+      throw{
+        status:498,
+        code: "TOKEN_INVALID",
+        message: "Token is invalid."
+    }
+  }
 }
 
 export default new emailService();

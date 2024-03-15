@@ -28,6 +28,19 @@ const updateAvatar = async (id: string, avatar: string) => {
   });
 };
 
+const getEmailTokens = async(userId:string)=>{
+  return await prisma.emailToken.findMany({
+    where:{userId}
+  }); 
+}
+
+const updateEmailVerified = async(id:string)=>{
+  return await prisma.user.update({
+    where: {id},
+    data: {emailVerified: true}
+  })
+}
+
 const addEmailToken = async (userId: string, token: string, expireAt: Date) => {
   return await prisma.emailToken.create({
     data: { token, expireAt, userId },
@@ -47,4 +60,6 @@ export const userRepository = {
   updateAvatar,
   cleanUpTokens,
   addEmailToken,
+  getEmailTokens,
+  updateEmailVerified,
 };
