@@ -31,7 +31,7 @@ const updateAvatar = async (id: string, avatar: string) => {
 const getEmailTokens = async(userId:string)=>{
   return await prisma.emailToken.findMany({
     where:{userId}
-  });
+  }); 
 }
 
 const updateEmailVerified = async(id:string)=>{

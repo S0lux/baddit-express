@@ -36,9 +36,12 @@ const logoutUser = async (req: Request, res: Response, next: NextFunction) => {
 
 const verifyEmail = async(req:Request , res:Response)=>{
   const tokenToCheck = req.body["token"]
-  if(tokenToCheck)
-  {
-    
+  try{
+    await awsService.getVerificationEmailToken(tokenToCheck,req.user!.id)
+    return res.status(200).json({message: "Email Verified"})
+  }
+  catch(err){
+    handleServiceError(res,err);
   }
 }
 
