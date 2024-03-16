@@ -20,11 +20,7 @@ const parsedEnv = envSchema.safeParse(process.env);
 
 if (!parsedEnv.success) {
   console.error("Invalid or missing environment variables:");
-  console.error(
-    parsedEnv.error.errors.forEach((e) =>
-      e.path.forEach((p) => console.error(p))
-    )
-  );
+  console.error(parsedEnv.error.errors.forEach((e) => e.path.forEach((p) => console.error(p))));
   process.exit(1);
 }
 

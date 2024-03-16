@@ -1,12 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { MulterError } from "multer";
 
-const handleMulterError = (
-  err: any,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const handleMulterError = (err: any, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof MulterError) {
     return res.status(400).json({
       error: {

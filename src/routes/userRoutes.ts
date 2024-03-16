@@ -12,7 +12,7 @@ router.post(
   "/avatar",
   avatarParser.single("avatar"),
   userController.updateAvatar,
-  handleMulterError
+  handleMulterError,
 );
 
 export default router;

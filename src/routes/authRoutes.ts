@@ -14,13 +14,10 @@ router.post(
   "/login",
   passport.authenticate("local", authenticateOptions),
   authController.loginUser,
-  handleAuthError
+  handleAuthError,
 );
 
-router.post(
-  "/verification",
-  authController.verifyEmail
-)
+router.post("/verification", authController.verifyEmail);
 
 router.post("/signup", authController.registerUser);
 router.post("/logout", authController.logoutUser);

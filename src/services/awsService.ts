@@ -20,11 +20,7 @@ class emailService {
     const expireAt = new Date().setMinutes(new Date().getMinutes() + 2);
 
     try {
-      const emailToken = await userRepository.addEmailToken(
-        userId,
-        token,
-        new Date(expireAt)
-      );
+      const emailToken = await userRepository.addEmailToken(userId, token, new Date(expireAt));
     } catch {
       throw {
         status: 500,
@@ -50,7 +46,7 @@ class emailService {
             },
           },
           Source: "no-reply@baddit.life",
-        })
+        }),
       );
     } catch {
       throw {
@@ -61,29 +57,28 @@ class emailService {
     }
   }
 
-  async verifyEmailToken(token:string, userId:string){
-    const tokenArray = await userRepository.getEmailTokens(userId);  
-    const matchedToken = tokenArray.find(element=> element.token === token)
+  async verifyEmailToken(token: string, userId: string) {
+    const tokenArray = await userRepository.getEmailTokens(userId);
+    const matchedToken = tokenArray.find((element) => element.token === token);
     /*matched*/
-    if(matchedToken){
-      if(matchedToken.expireAt.getTime >= Date.now){
+    if (matchedToken) {
+      if (matchedToken.expireAt.getTime >= Date.now) {
         await userRepository.updateEmailVerified(userId);
-      }
-      else{
-        throw{
-          status:498,
-          code:"TOKEN_EXPIRED",
-          message:"Token is expired"
-        }
+      } else {
+        throw {
+          status: 498,
+          code: "TOKEN_EXPIRED",
+          message: "Token is expired",
+        };
       }
     }
     /*not matched*/
-    if(!matchedToken)
-      throw{
-        status:498,
+    if (!matchedToken)
+      throw {
+        status: 498,
         code: "TOKEN_INVALID",
-        message: "Token is invalid."
-    }
+        message: "Token is invalid.",
+      };
   }
 }
 

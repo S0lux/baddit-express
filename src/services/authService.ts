@@ -5,11 +5,7 @@ class authService {
   // IMPORTANT
   // If you are looking for the login method, it is handled by PassportJS in the controller
 
-  async register(userData: {
-    username: string;
-    password: string;
-    email: string;
-  }) {
+  async register(userData: { username: string; password: string; email: string }) {
     const hashedPassword = generateHash(userData.password);
     const data = {
       username: userData.username,

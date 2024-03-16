@@ -1,8 +1,4 @@
-import {
-  CloudinaryStorage,
-  OptionCallback,
-  Options,
-} from "multer-storage-cloudinary";
+import { CloudinaryStorage, OptionCallback, Options } from "multer-storage-cloudinary";
 
 const cloudinary = require("cloudinary").v2;
 
