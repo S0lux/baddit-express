@@ -2,7 +2,7 @@ import express from "express";
 import { authController } from "../controllers/authController";
 import passport, { AuthenticateOptions } from "passport";
 import handleAuthError from "../middlewares/handleAuthError";
-import ensureAuthenticated from "../middlewares/ensureAuthenticated";
+import { authValidator } from "../validators/authValidators";
 const router = express.Router();
 
 const authenticateOptions: AuthenticateOptions = {
@@ -18,9 +18,8 @@ router.post(
   handleAuthError
 );
 
-router.post("/verification", authController.verifyEmail);
-
-router.post("/signup", authController.registerUser);
+router.post("/verification", authValidator.emailToken, authController.verifyEmail);
+router.post("/signup", authValidator.register, authController.registerUser);
 router.post("/logout", authController.logoutUser);
 
 export default router;

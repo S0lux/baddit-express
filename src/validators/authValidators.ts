@@ -1,16 +1,49 @@
-import { z } from "zod";
+import { NextFunction, Request, Response } from "express";
+import { loginBodyValidator } from "./schemas/loginBody";
+import { registerBodyValidator } from "./schemas/registerBody";
+import { emailTokenValidator } from "./schemas/emailTokenBody";
 
-export const loginBodyValidator = z
-  .object({
-    username: z.string().min(3),
-    password: z.string().min(6),
-  })
-  .strict();
+const login = (req: Request, res: Response, next: NextFunction) => {
+  const body = req.body;
+  const result = loginBodyValidator.safeParse(body);
 
-export const registerBodyValidator = z
-  .object({
-    username: z.string().min(3, "Username must be at least 3 characters long"),
-    password: z.string().min(6, "Password must be at least 6 characters long"),
-    email: z.string().email("Invalid email address"),
-  })
-  .strict();
+  if (!result.success) {
+    res
+      .status(400)
+      .json({ error: { code: "BAD_REQUEST", message: result.error.errors[0].message } });
+  }
+
+  next();
+};
+
+const register = (req: Request, res: Response, next: NextFunction) => {
+  const body = req.body;
+  const result = registerBodyValidator.safeParse(body);
+
+  if (!result.success) {
+    res
+      .status(400)
+      .json({ error: { code: "BAD_REQUEST", message: result.error.errors[0].message } });
+  }
+
+  next();
+};
+
+const emailToken = (req: Request, res: Response, next: NextFunction) => {
+  const body = req.body;
+  const result = emailTokenValidator.safeParse(body);
+
+  if (!result.success) {
+    res
+      .status(400)
+      .json({ error: { code: "BAD_REQUEST", message: result.error.errors[0].message } });
+  }
+
+  next();
+};
+
+export const authValidator = {
+  login,
+  register,
+  emailToken,
+};

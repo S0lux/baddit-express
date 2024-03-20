@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { registerBodyValidator } from "../validators/authValidators";
 import authService from "../services/authService";
 import { handleServiceError } from "../utils/handleServiceError";
 import awsService from "../services/awsService";
@@ -9,16 +8,8 @@ const loginUser = async (req: Request, res: Response) => {
 };
 
 const registerUser = async (req: Request, res: Response) => {
-  const parsedResult = registerBodyValidator.safeParse(req.body);
-
-  if (!parsedResult.success) {
-    return res.status(400).json({
-      error: { code: "BAD_REQUEST", message: parsedResult.error.errors[0].message },
-    });
-  }
-
   try {
-    const newUser = await authService.register(parsedResult.data);
+    const newUser = await authService.register(req.body);
     await awsService.sendVerificationEmail(newUser.id);
     return res.status(201).json({ message: "Email sent" });
   } catch (error) {
