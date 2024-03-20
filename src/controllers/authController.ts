@@ -13,7 +13,7 @@ const registerUser = async (req: Request, res: Response) => {
 
   if (!parsedResult.success) {
     return res.status(400).json({
-      error: { code: "BAD_REQUEST", message: "Invalid request body" },
+      error: { code: "BAD_REQUEST", message: parsedResult.error.errors[0].message },
     });
   }
 
@@ -34,9 +34,28 @@ const logoutUser = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const verifyEmail = async (req: Request, res: Response) => {
-  const tokenToCheck = req.body["token"];
   try {
-    await awsService.verifyEmailToken(tokenToCheck, req.user!.id);
+    const userId = req.user?.id;
+    const tokenToCheck = req.body["token"];
+
+    if (!tokenToCheck) {
+      throw {
+        status: 400,
+        code: "BAD_REQUEST",
+        message: "Missing token in request body",
+      };
+    }
+
+    if (!userId) {
+      throw {
+        status: 401,
+        code: "INVALID_CREDENTIALS",
+        message: "You need to be logged in to verify your account",
+      };
+    }
+
+    await awsService.verifyEmailToken(tokenToCheck, userId);
+
     return res.status(200).json({ message: "Email Verified" });
   } catch (err) {
     handleServiceError(res, err);

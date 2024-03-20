@@ -2,6 +2,7 @@ import express from "express";
 import { authController } from "../controllers/authController";
 import passport, { AuthenticateOptions } from "passport";
 import handleAuthError from "../middlewares/handleAuthError";
+import ensureAuthenticated from "../middlewares/ensureAuthenticated";
 const router = express.Router();
 
 const authenticateOptions: AuthenticateOptions = {
@@ -14,7 +15,7 @@ router.post(
   "/login",
   passport.authenticate("local", authenticateOptions),
   authController.loginUser,
-  handleAuthError,
+  handleAuthError
 );
 
 router.post("/verification", authController.verifyEmail);

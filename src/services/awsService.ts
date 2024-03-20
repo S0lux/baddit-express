@@ -17,7 +17,7 @@ class emailService {
     }
 
     const token = randomstring.generate();
-    const expireAt = new Date().setMinutes(new Date().getMinutes() + 2);
+    const expireAt = new Date().setMinutes(new Date().getMinutes() + 5);
 
     try {
       const emailToken = await userRepository.addEmailToken(userId, token, new Date(expireAt));
@@ -46,7 +46,7 @@ class emailService {
             },
           },
           Source: "no-reply@baddit.life",
-        }),
+        })
       );
     } catch {
       throw {
@@ -62,7 +62,7 @@ class emailService {
     const matchedToken = tokenArray.find((element) => element.token === token);
     /*matched*/
     if (matchedToken) {
-      if (matchedToken.expireAt.getTime >= Date.now) {
+      if (matchedToken.expireAt.getTime() >= Date.now()) {
         await userRepository.updateEmailVerified(userId);
       } else {
         throw {
