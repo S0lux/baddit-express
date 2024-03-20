@@ -11,8 +11,8 @@ import session from "express-session";
 const app: Application = express();
 
 // CORS
-// const { corsOptions } = require("./config/cors");
-// app.use(cors(corsOptions));
+const { corsOptions } = require("./config/cors");
+app.use(cors(corsOptions));
 
 // Basic middlewares
 app.use(morgan("dev"));
