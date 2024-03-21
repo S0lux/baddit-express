@@ -13,7 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
+enum UserRole {
   USER
   ADMIN
 }
@@ -36,7 +36,7 @@ model User {
   emailVerified  Boolean  @default(false)
   avatarUrl      String   @default("https://placehold.co/100x100/orange/white?text=avatar")
   status         Status   @default(STANDARD)
-  role           Role     @default(USER)
+  role           UserRole     @default(USER)
   registeredAt   DateTime @default(now())
 
   emailTokens EmailToken[]
