@@ -18,16 +18,29 @@ enum Role {
   ADMIN
 }
 
+enum CommunityRole {
+  MEMBER
+  MODERATOR
+}
+
+enum Status {
+  STANDARD
+  SUSPENDED
+}
+
 model User {
-  id             String       @id @default(uuid())
-  email          String       @unique
-  username       String       @unique
+  id             String   @id @default(uuid())
+  username       String   @unique
   hashedPassword String
-  avatarUrl      String       @default("https://placehold.co/100x100/orange/white?text=avatar")
-  emailVerified  Boolean      @default(false)
-  registeredAt   DateTime     @default(now())
-  emailTokens    EmailToken[]
-  role           Role         @default(USER)
+  email          String   @unique
+  emailVerified  Boolean  @default(false)
+  avatarUrl      String   @default("https://placehold.co/100x100/orange/white?text=avatar")
+  status         Status   @default(STANDARD)
+  role           Role     @default(USER)
+  registeredAt   DateTime @default(now())
+
+  emailTokens EmailToken[]
+  community   User_Community[]
 }
 
 model EmailToken {
@@ -37,4 +50,27 @@ model EmailToken {
   token     String
   expireAt  DateTime
   createdAt DateTime @default(now())
+}
+
+model Community {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  logoUrl     String   @default("https://placehold.co/100x100/pink/white?text=logo")
+  bannerUrl   String   @default("https://placehold.co/100x100/pink/white?text=banner")
+  status      Status   @default(STANDARD)
+  createdAt   DateTime @default(now())
+
+  user User_Community[]
+}
+
+model User_Community {
+  user          User          @relation(fields: [userId], references: [id])
+  userId        String
+  community     Community     @relation(fields: [communityId], references: [id])
+  communityId   String
+  communityRole CommunityRole @default(MEMBER)
+  banned        Boolean       @default(false)
+
+  @@id([userId, communityId])
 }
