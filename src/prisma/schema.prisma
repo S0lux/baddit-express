@@ -40,7 +40,8 @@ model User {
   registeredAt   DateTime @default(now())
 
   emailTokens EmailToken[]
-  community   User_Community[]
+  communitiesOwned        Community[]
+  communitiesParticipated User_Community[]
 }
 
 model EmailToken {
@@ -55,6 +56,8 @@ model EmailToken {
 model Community {
   id          String   @id @default(uuid())
   name        String   @unique
+  User        User     @relation(fields: [ownerId], references: [id])
+  ownerId     String
   description String
   logoUrl     String   @default("https://placehold.co/100x100/pink/white?text=logo")
   bannerUrl   String   @default("https://placehold.co/100x100/pink/white?text=banner")
