@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,6 +5,54 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id                      String           @id @default(uuid())
+  username                String           @unique
+  hashedPassword          String
+  email                   String           @unique
+  emailVerified           Boolean          @default(false)
+  avatarUrl               String           @default("https://placehold.co/100x100/orange/white?text=avatar")
+  status                  Status           @default(STANDARD)
+  role                    UserRole         @default(USER)
+  registeredAt            DateTime         @default(now())
+  communitiesOwned        Community[]
+  emailTokens             EmailToken[]
+  communitiesParticipated User_Community[]
+}
+
+model EmailToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String
+  expireAt  DateTime
+  createdAt DateTime @default(now())
+  User      User     @relation(fields: [userId], references: [id])
+}
+
+model Community {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  ownerId     String
+  description String
+  logoUrl     String           @default("https://placehold.co/100x100/pink/white?text=logo")
+  bannerUrl   String           @default("https://placehold.co/100x100/pink/white?text=banner")
+  status      Status           @default(STANDARD)
+  createdAt   DateTime         @default(now())
+  User        User             @relation(fields: [ownerId], references: [id])
+  user        User_Community[]
+}
+
+model User_Community {
+  userId        String
+  communityId   String
+  communityRole CommunityRole @default(MEMBER)
+  banned        Boolean       @default(false)
+  community     Community     @relation(fields: [communityId], references: [id])
+  user          User          @relation(fields: [userId], references: [id])
+
+  @@id([userId, communityId])
 }
 
 enum UserRole {
@@ -26,51 +68,4 @@ enum CommunityRole {
 enum Status {
   STANDARD
   SUSPENDED
-}
-
-model User {
-  id             String   @id @default(uuid())
-  username       String   @unique
-  hashedPassword String
-  email          String   @unique
-  emailVerified  Boolean  @default(false)
-  avatarUrl      String   @default("https://placehold.co/100x100/orange/white?text=avatar")
-  status         Status   @default(STANDARD)
-  role           UserRole     @default(USER)
-  registeredAt   DateTime @default(now())
-
-  emailTokens EmailToken[]
-  community   User_Community[]
-}
-
-model EmailToken {
-  id        String   @id @default(uuid())
-  User      User     @relation(fields: [userId], references: [id])
-  userId    String
-  token     String
-  expireAt  DateTime
-  createdAt DateTime @default(now())
-}
-
-model Community {
-  id          String   @id @default(uuid())
-  name        String
-  description String
-  logoUrl     String   @default("https://placehold.co/100x100/pink/white?text=logo")
-  bannerUrl   String   @default("https://placehold.co/100x100/pink/white?text=banner")
-  status      Status   @default(STANDARD)
-  createdAt   DateTime @default(now())
-
-  user User_Community[]
-}
-
-model User_Community {
-  user          User          @relation(fields: [userId], references: [id])
-  userId        String
-  community     Community     @relation(fields: [communityId], references: [id])
-  communityId   String
-  communityRole CommunityRole @default(MEMBER)
-  banned        Boolean       @default(false)
-
-  @@id([userId, communityId])
 }

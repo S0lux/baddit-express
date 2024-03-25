@@ -4,6 +4,7 @@ import cors from "cors";
 
 import authRouter from "./routes/authRoutes";
 import userRouter from "./routes/userRoutes";
+import communityRouter from "./routes/communityRoutes";
 
 import passport from "passport";
 import session from "express-session";
@@ -31,6 +32,7 @@ app.use(passport.session());
 // Register routes
 app.use("/v1/auth", authRouter);
 app.use("/v1/user", userRouter);
+app.use("/v1/communities", communityRouter);
 
 // Catch-all route
 app.all("*", (req, res) => {
