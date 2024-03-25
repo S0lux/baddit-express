@@ -2,7 +2,7 @@ import { CommunityRole, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const createCommunity = async (data: { name: string; description: string }) => {
+const createCommunity = async (data: { name: string; description: string; ownerId: string }) => {
   return await prisma.community.create({ data }).catch((error) => null);
 };
 

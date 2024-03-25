@@ -4,8 +4,8 @@ import communityService from "../services/communityService";
 
 const createCommunity = async (req: Request, res: Response) => {
   try {
-    const newCommunity = await communityService.createCommunity(req.body);
-    await communityService.createCommunityModerator(req.user!.id, newCommunity.id);
+    const data = { ...req.body, ownerId: req.user!.id };
+    await communityService.createCommunity(data);
     return res.status(201).json({ message: "Community created" });
   } catch (error) {
     handleServiceError(res, error);

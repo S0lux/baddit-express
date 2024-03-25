@@ -1,7 +1,7 @@
 import { communityRepository } from "../repositories/communityRepository";
 
 class communityService {
-  async createCommunity(communityData: { name: string; description: string }) {
+  async createCommunity(communityData: { name: string; description: string; ownerId: string }) {
     const newCommunity = await communityRepository.createCommunity(communityData);
     if (!newCommunity)
       throw {
