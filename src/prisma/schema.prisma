@@ -36,7 +36,7 @@ model User {
   emailVerified  Boolean  @default(false)
   avatarUrl      String   @default("https://placehold.co/100x100/orange/white?text=avatar")
   status         Status   @default(STANDARD)
-  role           UserRole     @default(USER)
+  role           UserRole @default(USER)
   registeredAt   DateTime @default(now())
 
   emailTokens EmailToken[]
@@ -54,7 +54,7 @@ model EmailToken {
 
 model Community {
   id          String   @id @default(uuid())
-  name        String
+  name        String   @unique
   description String
   logoUrl     String   @default("https://placehold.co/100x100/pink/white?text=logo")
   bannerUrl   String   @default("https://placehold.co/100x100/pink/white?text=banner")
