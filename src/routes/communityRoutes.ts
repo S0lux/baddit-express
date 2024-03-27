@@ -10,6 +10,7 @@ router.post(
   ensureAuthenticated,
   communityController.createCommunity
 );
+router.post("/:communityName/member", ensureAuthenticated, communityController.joinCommunity);
 
 router.get("/:communityName", communityController.getCommunity);
 

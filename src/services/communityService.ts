@@ -12,14 +12,24 @@ class communityService {
     return newCommunity;
   }
   async createCommunityModerator(userId: string, communityId: string) {
-    const newModerator = await communityRepository.createCommunityModerator(communityId, userId);
+    const newModerator = await communityRepository.createCommunityModerator(userId, communityId);
     if (!newModerator)
       throw {
         status: 409,
         code: "CONFLICT",
-        message: "User is already moderator.",
+        message: "User is already moderator of this community.",
       };
     return newModerator;
+  }
+  async createCommunityMember(data: { userId: string; communityId: string }) {
+    const newMember = await communityRepository.createCommunityMember(data);
+    if (!newMember) {
+      throw {
+        status: 409,
+        code: "CONFLICT",
+        message: "User is already join this community.",
+      };
+    }
   }
   async getCommunity(communityName: string) {
     const community = await communityRepository.getCommunityByName(communityName);

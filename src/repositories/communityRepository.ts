@@ -10,15 +10,22 @@ const getCommunityByName = async (name: string) => {
   return await prisma.community.findUnique({ where: { name } });
 };
 
-const createCommunityModerator = async (communityId: string, userId: string) => {
-  const data = { communityId: communityId, userId: userId, communityRole: CommunityRole.MODERATOR };
+const createCommunityModerator = async (
+  userId: string,
+  communityId: string,
+  communityRole: CommunityRole = CommunityRole.MODERATOR
+) => {
+  const data = { userId: userId, communityId: communityId, communityRole: communityRole };
   return await prisma.user_Community.create({ data }).catch((err) => null);
 };
 
-const createCommunityMember = async (communityId: string, userId: string) => {};
+const createCommunityMember = async (data: { communityId: string; userId: string }) => {
+  return await prisma.user_Community.create({ data }).catch((err) => null);
+};
 
 export const communityRepository = {
   createCommunity,
   createCommunityModerator,
+  createCommunityMember,
   getCommunityByName,
 };
