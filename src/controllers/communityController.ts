@@ -11,6 +11,16 @@ const createCommunity = async (req: Request, res: Response) => {
     handleServiceError(res, error);
   }
 };
+const joinCommunity = async (req: Request, res: Response) => {
+  try {
+    const community = await communityService.getCommunity(req.params.communityName);
+    const data = { userId: req.user!.id, communityId: community!.id };
+    await communityService.createCommunityMember(data);
+    return res.status(201).json({ message: "Joined" });
+  } catch (error) {
+    handleServiceError(res, error);
+  }
+};
 const getCommunity = async (req: Request, res: Response) => {
   try {
     const communityFound = await communityService.getCommunity(req.params.communityName);
@@ -22,4 +32,5 @@ const getCommunity = async (req: Request, res: Response) => {
 export const communityController = {
   createCommunity,
   getCommunity,
+  joinCommunity,
 };
