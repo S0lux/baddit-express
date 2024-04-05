@@ -1,44 +1,33 @@
+import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
+import { HttpException } from "../exception/httpError";
 import { communityRepository } from "../repositories/communityRepository";
 
 class communityService {
   async createCommunity(communityData: { name: string; description: string; ownerId: string }) {
     const newCommunity = await communityRepository.createCommunity(communityData);
     if (!newCommunity)
-      throw {
-        status: 409,
-        code: "CONFLICT",
-        message: "Community name is already taken.",
-      };
+      throw new HttpException(HttpStatusCode.CONFLICT, APP_ERROR_CODE.communityNameTaken);
     return newCommunity;
   }
+
   async createCommunityModerator(userId: string, communityId: string) {
     const newModerator = await communityRepository.createCommunityModerator(userId, communityId);
     if (!newModerator)
-      throw {
-        status: 409,
-        code: "CONFLICT",
-        message: "User is already moderator of this community.",
-      };
+      throw new HttpException(HttpStatusCode.CONFLICT, APP_ERROR_CODE.userIsAlreadyModerator);
     return newModerator;
   }
+
   async createCommunityMember(data: { userId: string; communityId: string }) {
     const newMember = await communityRepository.createCommunityMember(data);
     if (!newMember) {
-      throw {
-        status: 409,
-        code: "CONFLICT",
-        message: "User is already join this community.",
-      };
+      throw new HttpException(HttpStatusCode.CONFLICT, APP_ERROR_CODE.userAlreadyInCommunity);
     }
   }
+
   async getCommunity(communityName: string) {
     const community = await communityRepository.getCommunityByName(communityName);
     if (!community)
-      throw {
-        status: 404,
-        code: "NOT_FOUND",
-        message: "There is no community name: " + communityName,
-      };
+      throw new HttpException(HttpStatusCode.NOT_FOUND, APP_ERROR_CODE.communityNotFound);
     return community;
   }
 }

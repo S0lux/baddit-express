@@ -1,3 +1,5 @@
+import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
+import { HttpException } from "../exception/httpError";
 import { userRepository } from "../repositories/userRepository";
 
 class userService {
@@ -5,11 +7,7 @@ class userService {
     try {
       await userRepository.updateAvatar(id, avatarUrl);
     } catch {
-      throw {
-        status: 500,
-        code: "DATABASE_ERROR",
-        message: "Error updating user avatar.",
-      };
+      throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }
   }
 }

@@ -8,12 +8,13 @@ import communityRouter from "./routes/communityRoutes";
 
 import passport from "passport";
 import session from "express-session";
+import handleError from "./middlewares/handleError";
 
 const app: Application = express();
 
 // CORS
-const { corsOptions } = require("./config/cors");
-app.use(cors(corsOptions));
+// const { corsOptions } = require("./config/cors");
+// app.use(cors(corsOptions));
 
 // Basic middlewares
 app.use(morgan("dev"));
@@ -33,6 +34,8 @@ app.use(passport.session());
 app.use("/v1/auth", authRouter);
 app.use("/v1/user", userRouter);
 app.use("/v1/communities", communityRouter);
+
+app.use(handleError);
 
 // Catch-all route
 app.all("*", (req, res) => {

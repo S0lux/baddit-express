@@ -3,17 +3,15 @@ import randomstring from "randomstring";
 import { userRepository } from "../repositories/userRepository";
 import { SendEmailCommand } from "@aws-sdk/client-ses";
 import { generateVerificationEmail } from "../templates/verificationEmail";
+import { HttpException } from "../exception/httpError";
+import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
 
 class emailService {
   async sendVerificationEmail(userId: string) {
     const user = await userRepository.getUserById(userId);
 
     if (!user) {
-      throw {
-        status: 404,
-        code: "USER_NOT_FOUND",
-        message: "No user is associated with this ID.",
-      };
+      throw new HttpException(HttpStatusCode.NOT_FOUND, APP_ERROR_CODE.userNotFound);
     }
 
     const token = randomstring.generate();
@@ -22,11 +20,7 @@ class emailService {
     try {
       const emailToken = await userRepository.addEmailToken(userId, token, new Date(expireAt));
     } catch {
-      throw {
-        status: 500,
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to create email token.",
-      };
+      throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }
 
     try {
@@ -49,36 +43,24 @@ class emailService {
         })
       );
     } catch {
-      throw {
-        status: 500,
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to send verification email.",
-      };
+      throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }
   }
 
   async verifyEmailToken(token: string, userId: string) {
     const tokenArray = await userRepository.getEmailTokens(userId);
     const matchedToken = tokenArray.find((element) => element.token === token);
-    /*matched*/
+
     if (matchedToken) {
       if (matchedToken.expireAt.getTime() >= Date.now()) {
         await userRepository.updateEmailVerified(userId);
       } else {
-        throw {
-          status: 498,
-          code: "TOKEN_EXPIRED",
-          message: "Token is expired",
-        };
+        throw new HttpException(HttpStatusCode.INVALID_TOKEN, APP_ERROR_CODE.tokenExpired);
       }
     }
-    /*not matched*/
+
     if (!matchedToken)
-      throw {
-        status: 498,
-        code: "TOKEN_INVALID",
-        message: "Token is invalid.",
-      };
+      throw new HttpException(HttpStatusCode.INVALID_TOKEN, APP_ERROR_CODE.tokenInvalid);
   }
 }
 

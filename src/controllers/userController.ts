@@ -1,12 +1,11 @@
-import { Request, Response } from "express";
-import { handleServiceError } from "../utils/handleServiceError";
+import { NextFunction, Request, Response } from "express";
 import userService from "../services/userService";
 
 const getMe = (req: Request, res: Response) => {
   res.status(200).json({ user: req.user });
 };
 
-const updateAvatar = async (req: Request, res: Response) => {
+const updateAvatar = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.file) {
       throw new Error("Avatar is required");
@@ -16,7 +15,7 @@ const updateAvatar = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Avatar updated successfully" });
   } catch (err) {
-    handleServiceError(res, err);
+    next(err);
   }
 };
 

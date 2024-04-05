@@ -1,3 +1,5 @@
+import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
+import { HttpException } from "../exception/httpError";
 import { userRepository } from "../repositories/userRepository";
 import { generateHash } from "../utils/hashFunctions";
 
@@ -13,15 +15,17 @@ class authService {
       hashedPassword: hashedPassword,
     };
 
+    const user = await userRepository.getUserByUsername(data.username);
+    if (user) {
+      throw new HttpException(HttpStatusCode.CONFLICT, APP_ERROR_CODE.usernameTaken);
+    }
+
+    const emailUser = await userRepository.getUserByUsername(data.email);
+    if (emailUser) {
+      throw new HttpException(HttpStatusCode.CONFLICT, APP_ERROR_CODE.emailTaken);
+    }
+
     const newUser = await userRepository.createUser(data);
-
-    if (!newUser)
-      throw {
-        status: 409,
-        code: "BAD_CREDENTIALS",
-        message: "Email or username is already taken.",
-      };
-
     return newUser;
   }
 }

@@ -1,19 +1,14 @@
 import { NextFunction, Request, Response } from "express";
+import { HttpException } from "../exception/httpError";
+import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
 
 const ensureAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   if (!req.user) {
-    return res.status(401).json({
-      error: { code: "UNAUTHORIZED", message: "You are not logged in." },
-    });
+    throw new HttpException(HttpStatusCode.UNAUTHORIZED, APP_ERROR_CODE.notLoggedIn);
   }
 
   if (req.user && !req.user.emailVerified) {
-    return res.status(401).json({
-      error: {
-        code: "EMAIL_NOT_VERIFIED",
-        message: "You need to verify your email address.",
-      },
-    });
+    throw new HttpException(HttpStatusCode.UNAUTHORIZED, APP_ERROR_CODE.emailNotVerified);
   }
 
   next();
