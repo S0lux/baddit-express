@@ -1,13 +1,7 @@
 const whitelist = ["http://localhost:3000", "http://localhost:3001", "https://baddit.life"];
 
 export const corsOptions = {
-  origin: function (origin: string, callback: any) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: "*",
   methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
   credentials: true,
 };
