@@ -10,11 +10,17 @@ import passport from "passport";
 import session from "express-session";
 import handleError from "./middlewares/handleError";
 
+import swaggerUi from "swagger-ui-express";
+import { specs } from "./config/swagger";
+
 const app: Application = express();
 
+// Swagger
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+
 // CORS
-// const { corsOptions } = require("./config/cors");
-// app.use(cors(corsOptions));
+const { corsOptions } = require("./config/cors");
+app.use(cors(corsOptions));
 
 // Basic middlewares
 app.use(morgan("dev"));

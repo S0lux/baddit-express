@@ -36,7 +36,7 @@ const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     if (!userId) {
-      throw new HttpException(HttpStatusCode.UNAUTHORIZED, APP_ERROR_CODE.emailNotVerified);
+      throw new HttpException(HttpStatusCode.UNAUTHORIZED, APP_ERROR_CODE.notLoggedIn);
     }
 
     await awsService.verifyEmailToken(tokenToCheck, userId);

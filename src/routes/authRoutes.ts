@@ -9,8 +9,105 @@ const authenticateOptions: AuthenticateOptions = {
   failWithError: true,
 };
 
-// If a login failed due to invalid credentials, the error will be handled by the handleAuthError middleware
-// Otherwise the user object will be available in future request objects
+/**
+ * @swagger
+ * tags:
+ *   name: Authentication
+ *   description: Login, registration and verification related routes
+ */
+
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *   Login:
+ *    type: object
+ *    required:
+ *     - username
+ *     - password
+ *    properties:
+ *     username:
+ *      type: string
+ *      description: Username of the user
+ *     password:
+ *      type: string
+ *      description: Password of the user
+ *    example:
+ *     username: tranloc
+ *     password: 12345678a
+ *   Signup:
+ *    type: object
+ *    required:
+ *     - username
+ *     - password
+ *     - email
+ *    properties:
+ *     username:
+ *      type: string
+ *      description: Username of the user
+ *     password:
+ *      type: string
+ *      description: Password of the user
+ *     email:
+ *      type: string
+ *      description: Email of the user
+ *    example:
+ *     username: tranloc
+ *     password: 12345678a
+ *     email: loctranphuoc123@gmail.com
+ *   User:
+ *    type: object
+ *    properties:
+ *     id:
+ *      type: string
+ *     username:
+ *      type: string
+ *     email:
+ *      type: string
+ *     avatarUrl:
+ *      type: string
+ *     emailVerified:
+ *      type: boolean
+ *     registeredAt:
+ *      type: string
+ *      format: date-time
+ *     role:
+ *      type: string
+ *   Token:
+ *    type: object
+ *    required:
+ *     - token
+ *    properties:
+ *     token:
+ *      type: string
+ *      description: The token sent to the user's email
+ *    example:
+ *     token: aw1232hwfisdu91ued2w7yr2
+ *
+ */
+
+/**
+ * @swagger
+ *
+ * /v1/auth/login:
+ *  post:
+ *   summary: Login user
+ *   description: Login user with username and password
+ *   tags: [Authentication]
+ *   requestBody:
+ *    required: true
+ *    content:
+ *     application/json:
+ *      schema:
+ *       $ref: '#/components/schemas/Login'
+ *   responses:
+ *    200:
+ *     description: User logged in successfully
+ *    401:
+ *     description: Invalid credentials
+ *    500:
+ *     description: Internal server error
+ */
 router.post(
   "/login",
   passport.authenticate("local", authenticateOptions),
@@ -18,8 +115,77 @@ router.post(
   handleAuthError
 );
 
+/**
+ * @swagger
+ * /v1/auth/verification:
+ *  post:
+ *   summary: Verify email
+ *   description: Verify email with token
+ *   tags: [Authentication]
+ *   requestBody:
+ *    required: true
+ *    content:
+ *     application/json:
+ *      schema:
+ *       $ref: '#/components/schemas/Token'
+ *   responses:
+ *    200:
+ *     description: Verified email successfully
+ *    400:
+ *     description: Invalid request body
+ *    401:
+ *     description: User not logged in to verify email
+ *    498:
+ *     description: Token expired or invalid
+ *    500:
+ *     description: Internal server error
+ */
 router.post("/verification", authValidator.emailToken, authController.verifyEmail);
+
+/**
+ * @swagger
+ * /v1/auth/signup:
+ *  post:
+ *   summary: Register user
+ *   description: Register user with username, password and email
+ *   tags: [Authentication]
+ *   requestBody:
+ *    required: true
+ *    content:
+ *     application/json:
+ *      schema:
+ *       $ref: '#/components/schemas/Signup'
+ *   responses:
+ *    201:
+ *     description: User registered successfully
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/User'
+ *    400:
+ *     description: Invalid request body
+ *    409:
+ *     description: Username or email already taken
+ *    500:
+ *     description: Internal server error
+ */
 router.post("/signup", authValidator.register, authController.registerUser);
+
+/**
+ * @swagger
+ * /v1/auth/logout:
+ *  post:
+ *   summary: Logout user
+ *   description: Logout user who is logged in
+ *   tags: [Authentication]
+ *   responses:
+ *    200:
+ *     description: User logged out successfully
+ *    401:
+ *     description: User not logged in
+ *    500:
+ *     description: Internal server error
+ */
 router.post("/logout", authController.logoutUser);
 
 export default router;
