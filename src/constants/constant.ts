@@ -55,4 +55,8 @@ export const APP_ERROR_CODE = {
     code: "USER_ALREADY_IN_COMMUNITY",
     message: "User is already in this community",
   },
+  missingMedia: {
+    code: "MISSING_MEDIA",
+    message: "Missing media in the request",
+  },
 };
