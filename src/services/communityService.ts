@@ -24,7 +24,7 @@ class communityService {
     }
   }
 
-  async getCommunity(communityName: string) {
+  async getCommunityByName(communityName: string) {
     const community = await communityRepository.getCommunityByName(communityName);
     if (!community)
       throw new HttpException(HttpStatusCode.NOT_FOUND, APP_ERROR_CODE.communityNotFound);

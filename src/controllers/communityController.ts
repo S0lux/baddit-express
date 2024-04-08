@@ -12,7 +12,7 @@ const createCommunity = async (req: Request, res: Response, next: NextFunction) 
 };
 const joinCommunity = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const community = await communityService.getCommunity(req.params.communityName);
+    const community = await communityService.getCommunityByName(req.params.communityName);
     const data = { userId: req.user!.id, communityId: community!.id };
     await communityService.createCommunityMember(data);
     return res.status(201).json({ message: "Joined" });
@@ -22,7 +22,7 @@ const joinCommunity = async (req: Request, res: Response, next: NextFunction) =>
 };
 const getCommunity = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const communityFound = await communityService.getCommunity(req.params.communityName);
+    const communityFound = await communityService.getCommunityByName(req.params.communityName);
     return res.status(200).json({ community: communityFound });
   } catch (error) {
     next(error);
