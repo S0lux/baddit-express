@@ -20,6 +20,8 @@ model User {
   communitiesOwned        Community[]
   emailTokens             EmailToken[]
   communitiesParticipated User_Community[]
+  Post                    Post[]
+  Vote                    Vote[]
 }
 
 model EmailToken {
@@ -49,10 +51,36 @@ model User_Community {
   communityId   String
   communityRole CommunityRole @default(MEMBER)
   banned        Boolean       @default(false)
-  community     Community     @relation(fields: [communityId], references: [id])
-  user          User          @relation(fields: [userId], references: [id])
+  community     Community     @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, communityId])
+}
+
+model Post {
+  id            String   @id @default(uuid())
+  type          PostType
+  title         String
+  content       String
+  mediaUrls     String[]
+  author        User     @relation(fields: [authorName], references: [username])
+  authorName    String
+  communityName String
+  deleted       Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  score         Int      @default(0)
+  Vote          Vote[]
+}
+
+model Vote {
+  user     User      @relation(fields: [username], references: [username])
+  username String
+  post     Post      @relation(fields: [postId], references: [id])
+  postId   String
+  state    VoteState
+
+  @@id([username, postId])
 }
 
 enum UserRole {
@@ -68,4 +96,15 @@ enum CommunityRole {
 enum Status {
   STANDARD
   SUSPENDED
+}
+
+enum PostType {
+  TEXT
+  LINK
+  MEDIA
+}
+
+enum VoteState {
+  UPVOTE
+  DOWNVOTE
 }

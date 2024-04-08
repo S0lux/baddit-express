@@ -1,6 +1,7 @@
 import { CloudinaryStorage, OptionCallback, Options } from "multer-storage-cloudinary";
 
 const cloudinary = require("cloudinary").v2;
+var randomstring = require("randomstring");
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
@@ -15,7 +16,7 @@ declare interface cloudinaryOptions extends Options {
   };
 }
 
-const multerOpts: cloudinaryOptions = {
+const multerAvatarOpts: cloudinaryOptions = {
   cloudinary: cloudinary,
   params: {
     folder: "avatar",
@@ -23,4 +24,15 @@ const multerOpts: cloudinaryOptions = {
   },
 };
 
-export default new CloudinaryStorage(multerOpts);
+const postMediaOpts: cloudinaryOptions = {
+  cloudinary: cloudinary,
+  params: {
+    folder: "posts",
+    public_id: (req, file) => "post_" + randomstring.generate(10),
+  },
+};
+
+export const storage = {
+  avatarStorage: new CloudinaryStorage(multerAvatarOpts),
+  postMediaStorage: new CloudinaryStorage(postMediaOpts),
+};

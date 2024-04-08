@@ -30,6 +30,10 @@ class communityService {
       throw new HttpException(HttpStatusCode.NOT_FOUND, APP_ERROR_CODE.communityNotFound);
     return community;
   }
+
+  async getUserCommunityRole(username: string, communityName: string) {
+    return await communityRepository.getUserCommunityRole(username, communityName);
+  }
 }
 
 export default new communityService();

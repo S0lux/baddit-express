@@ -59,4 +59,32 @@ export const APP_ERROR_CODE = {
     code: "MISSING_MEDIA",
     message: "Missing media in the request",
   },
+  createPostFailed: {
+    code: "CREATE_POST_FAILED",
+    message: "Failed to create post",
+  },
+  onlyImageAllowed: {
+    code: "ONLY_IMAGE_ALLOWED",
+    message: "Only images are allowed",
+  },
+  onlyImageOrVideoAllowed: {
+    code: "ONLY_IMAGE_AND_VIDEO_ALLOWED",
+    message: "Only images and videos are allowed",
+  },
+  unknownVoteState: {
+    code: "UNKNOWN_VOTE_STATE",
+    message: "Vote state must be UPVOTE or DOWNVOTE",
+  },
+  postNotFound: {
+    code: "POST_NOT_FOUND",
+    message: "Post not found",
+  },
+  insufficientPermissions: {
+    code: "INSUFFICIENT_PERMISSIONS",
+    message: "You do not have permission to perform this action",
+  },
+  mediaPostEditingUnsupported: {
+    code: "MEDIA_POST_EDITING_UNSUPPORTED",
+    message: "Editing media posts is not supported",
+  },
 };
