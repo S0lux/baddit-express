@@ -30,19 +30,19 @@ class PostService {
       // Will cause error when database operation fails
       const posts = await postRepository.getPostsInCommunity(communityName, username, cursor);
 
-      const filteredPosts = posts.map((post) => {
-        if (post.deleted) {
-          return {
-            ...post,
-            content: "[deleted]",
-            mediaUrls: [],
-            title: "[deleted]",
-            authorName: "[deleted]",
-          };
-        } else return post;
-      });
+      // const filteredPosts = posts.map((post) => {
+      //   if (post.deleted) {
+      //     return {
+      //       ...post,
+      //       content: "[deleted]",
+      //       mediaUrls: [],
+      //       title: "[deleted]",
+      //       authorName: "[deleted]",
+      //     };
+      //   } else return post;
+      // });
 
-      return filteredPosts;
+      return posts;
     } catch (err) {
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }
@@ -51,19 +51,19 @@ class PostService {
   async getPostById(postId: string, username?: string) {
     const post = await postRepository.getPostById(postId, username);
 
-    if (!post) {
+    if (!post || post.deleted) {
       throw new HttpException(HttpStatusCode.NOT_FOUND, APP_ERROR_CODE.postNotFound);
     }
 
-    if (post.deleted) {
-      return {
-        ...post,
-        content: "[deleted]",
-        mediaUrls: [],
-        title: "[deleted]",
-        authorName: "[deleted]",
-      };
-    }
+    // if (post.deleted) {
+    //   return {
+    //     ...post,
+    //     content: "[deleted]",
+    //     mediaUrls: [],
+    //     title: "[deleted]",
+    //     authorName: "[deleted]",
+    //   };
+    // }
 
     return post;
   }

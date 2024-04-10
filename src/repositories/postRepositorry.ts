@@ -16,7 +16,7 @@ const createPost = async (data: {
 const getPostsInCommunity = async (communityName: string, username?: string, cursor?: string) => {
   if (username) {
     return await prisma.post.findMany({
-      where: { communityName },
+      where: { communityName, deleted: false },
       take: 10,
       skip: 1,
       cursor: cursor ? { id: cursor } : undefined,

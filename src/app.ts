@@ -38,7 +38,7 @@ app.use(passport.session());
 
 // Register routes
 app.use("/v1/auth", authRouter);
-app.use("/v1/user", userRouter);
+app.use("/v1/users", userRouter);
 app.use("/v1/communities", communityRouter);
 
 app.use(handleError);

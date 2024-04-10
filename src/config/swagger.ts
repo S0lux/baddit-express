@@ -11,6 +11,7 @@ const options = {
     servers: [
       {
         url: process.env.SWAGGER_API || "http://localhost:3001",
+        description: "Production server",
       },
     ],
   },
