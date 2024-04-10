@@ -41,6 +41,7 @@ model Community {
   logoUrl     String           @default("https://placehold.co/100x100/pink/white?text=logo")
   bannerUrl   String           @default("https://placehold.co/100x100/pink/white?text=banner")
   status      Status           @default(STANDARD)
+  memberCount Int              @default(0)
   createdAt   DateTime         @default(now())
   User        User             @relation(fields: [ownerId], references: [id])
   user        User_Community[]
