@@ -510,11 +510,11 @@ router.delete("/:communityName/posts/:postId/votes", postController.removeVote);
 
 /**
  * @swagger
- * /v1/communities/{communityName}/posts/{postId}/votes:
+ * /v1/communities/{communityName}:
  *  delete:
- *   summary: Remove vote from a post
- *   description: Remove vote from a post in a community
- *   tags: [Posts]
+ *   summary: Remove community
+ *   description: Remove community and all posts
+ *   tags: [Communities]
  *   parameters:
  *    - in: path
  *      name: communityName
@@ -526,16 +526,6 @@ router.delete("/:communityName/posts/:postId/votes", postController.removeVote);
  *      required: true
  *      description: The name of the community
  *      example: programming
- *    - in: path
- *      name: postId
- *      schema:
- *       type: string
- *       required: true
- *       description: The id of the post
- *       example: 123456
- *      required: true
- *      description: The id of the post
- *      example: 123456
  *   responses:
  *    200:
  *     description: Community has been deleted
