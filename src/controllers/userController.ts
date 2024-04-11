@@ -4,7 +4,13 @@ import { HttpException } from "../exception/httpError";
 import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
 
 const getMe = (req: Request, res: Response) => {
-  res.status(200).json({ user: req.user });
+  const user = req.user;
+
+  if (!user?.id) {
+    throw new HttpException(HttpStatusCode.UNAUTHORIZED, APP_ERROR_CODE.notLoggedIn);
+  }
+
+  res.status(200).json(user);
 };
 
 const updateAvatar = async (req: Request, res: Response, next: NextFunction) => {

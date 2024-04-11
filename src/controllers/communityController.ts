@@ -15,7 +15,7 @@ const joinCommunity = async (req: Request, res: Response, next: NextFunction) =>
     const community = await communityService.getCommunityByName(req.params.communityName);
     const data = { userId: req.user!.id, communityId: community!.id };
     await communityService.createCommunityMember(data);
-    return res.status(201).json({ message: "Joined" });
+    return res.status(200).json({ message: "Joined" });
   } catch (error) {
     next(error);
   }

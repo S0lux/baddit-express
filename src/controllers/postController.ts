@@ -49,7 +49,7 @@ const createPost = async (req: Request, res: Response, next: NextFunction) => {
     // Create post
     await postService.createPost(postData);
 
-    res.status(200).json({ message: "Post created successfully" });
+    res.status(201).json({ message: "Post created successfully" });
   } catch (err) {
     next(err);
   }
