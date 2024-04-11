@@ -63,7 +63,7 @@ const deletePost = async (req: Request, res: Response, next: NextFunction) => {
     // Check if post exists
     const post = await postService.getPostById(postId);
     const userCommunityRole = await communityService.getUserCommunityRole(
-      user.username,
+      user.id,
       post.communityName
     );
 
@@ -73,7 +73,7 @@ const deletePost = async (req: Request, res: Response, next: NextFunction) => {
       user.role !== "ADMIN" &&
       userCommunityRole?.communityRole !== "MODERATOR"
     ) {
-      throw new HttpException(HttpStatusCode.UNAUTHORIZED, APP_ERROR_CODE.insufficientPermissions);
+      throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.insufficientPermissions);
     }
 
     // Delete post
@@ -187,7 +187,7 @@ const editTextPostContent = async (req: Request, res: Response, next: NextFuncti
     }
 
     if (post.authorName !== user.username) {
-      throw new HttpException(HttpStatusCode.UNAUTHORIZED, APP_ERROR_CODE.insufficientPermissions);
+      throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.insufficientPermissions);
     }
 
     await postService.editTextPostContent(postId, content);

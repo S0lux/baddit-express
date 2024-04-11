@@ -7,7 +7,7 @@ const createCommunity = async (data: { name: string; description: string; ownerI
 };
 
 const getCommunityByName = async (name: string) => {
-  return await prisma.community.findUnique({ where: { name } });
+  return await prisma.community.findUnique({ where: { name: name, deleted: false } });
 };
 
 const createCommunityModerator = async (
@@ -23,9 +23,23 @@ const createCommunityMember = async (data: { communityId: string; userId: string
   return await prisma.user_Community.create({ data }).catch((err) => null);
 };
 
-const getUserCommunityRole = async (username: string, communityName: string) => {
+const getUserCommunityRole = async (userId: string, communityId: string) => {
   return await prisma.user_Community.findFirst({
-    where: { userId: username, communityId: communityName },
+    where: { userId: userId, communityId: communityId },
+  });
+};
+
+const deleteCommunity = async (communityName: string) => {
+  return await prisma.community.update({
+    where: { name: communityName },
+    data: { deleted: true, updateAt: new Date() },
+  });
+};
+
+const updateCommunityMemberCount = async (communityName: string, prevMemberCount: number) => {
+  return await prisma.community.update({
+    where: { name: communityName },
+    data: { memberCount: prevMemberCount + 1, updateAt: new Date() },
   });
 };
 
@@ -35,4 +49,6 @@ export const communityRepository = {
   createCommunityMember,
   getCommunityByName,
   getUserCommunityRole,
+  deleteCommunity,
+  updateCommunityMemberCount,
 };

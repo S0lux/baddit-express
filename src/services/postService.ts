@@ -113,6 +113,14 @@ class PostService {
     }
   }
 
+  async deleteAllPostsInCommunity(communityName: string) {
+    try {
+      await postRepository.deleteAllPostsInCommunity(communityName);
+    } catch (err) {
+      throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
+    }
+  }
+
   async editTextPostContent(postId: string, content: string) {
     try {
       await postRepository.editTextPostContent(postId, content);
