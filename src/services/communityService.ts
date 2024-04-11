@@ -44,17 +44,17 @@ class communityService {
     esle continue and check server error
     */
     if (
-      userInCommunity!.communityRole !== CommunityRole.MODERATOR &&
-      ownerId !== user.id &&
-      user.role !== UserRole.ADMIN
+      userInCommunity?.communityRole === CommunityRole.MODERATOR ||
+      ownerId === user.id ||
+      user.role === UserRole.ADMIN
     ) {
-      throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.insufficientPermissions);
-    } else {
       try {
         await communityRepository.deleteCommunity(community.name);
       } catch (err) {
         throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
       }
+    } else {
+      throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.insufficientPermissions);
     }
   }
   async updateCommunityMemberCount(communityName: string, prevMemberCount: number) {
