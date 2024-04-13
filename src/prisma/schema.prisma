@@ -17,6 +17,7 @@ model User {
   status                  Status           @default(STANDARD)
   role                    UserRole         @default(USER)
   registeredAt            DateTime         @default(now())
+  updateAt                DateTime         @updatedAt
   communitiesOwned        Community[]
   emailTokens             EmailToken[]
   communitiesParticipated User_Community[]
@@ -41,7 +42,10 @@ model Community {
   logoUrl     String           @default("https://placehold.co/100x100/pink/white?text=logo")
   bannerUrl   String           @default("https://placehold.co/100x100/pink/white?text=banner")
   status      Status           @default(STANDARD)
+  memberCount Int              @default(0)
+  deleted     Boolean          @default(false)
   createdAt   DateTime         @default(now())
+  updateAt    DateTime         @updatedAt
   User        User             @relation(fields: [ownerId], references: [id])
   user        User_Community[]
 }

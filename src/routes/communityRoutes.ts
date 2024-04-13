@@ -508,4 +508,37 @@ router.post("/:communityName/posts/:postId/votes", postController.votePost);
  */
 router.delete("/:communityName/posts/:postId/votes", postController.removeVote);
 
+/**
+ * @swagger
+ * /v1/communities/{communityName}:
+ *  delete:
+ *   summary: Remove community
+ *   description: Remove community and all posts
+ *   tags: [Communities]
+ *   parameters:
+ *    - in: path
+ *      name: communityName
+ *      schema:
+ *       type: string
+ *       required: true
+ *       description: The name of the community
+ *       example: programming
+ *      required: true
+ *      description: The name of the community
+ *      example: programming
+ *   responses:
+ *    200:
+ *     description: Community has been deleted
+ *    401:
+ *     description: User not authenticated
+ *    403:
+ *     description: User has no permission
+ *    404:
+ *     description: Community not found
+ *    500:
+ *     description: Internal server error
+ *
+ */
+router.delete("/:communityName", communityController.deleteCommunity);
+
 export default router;

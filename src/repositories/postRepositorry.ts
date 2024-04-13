@@ -112,6 +112,13 @@ const deletePost = async (postId: string) => {
   });
 };
 
+const deleteAllPostsInCommunity = async (communityName: string) => {
+  return await prisma.post.updateMany({
+    where: { communityName: communityName },
+    data: { deleted: true, updatedAt: new Date() },
+  });
+};
+
 const editTextPostContent = async (postId: string, content: string) => {
   return await prisma.post.update({
     where: { id: postId },
@@ -129,5 +136,6 @@ export const postRepository = {
   findUserVoteState,
   updatePostScore,
   deletePost,
+  deleteAllPostsInCommunity,
   editTextPostContent,
 };
