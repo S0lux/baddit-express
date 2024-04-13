@@ -74,7 +74,7 @@ model Post {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   score         Int      @default(0)
-  Vote          Vote[]
+  vote          Vote[]
 }
 
 model Vote {
