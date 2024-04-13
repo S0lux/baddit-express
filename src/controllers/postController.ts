@@ -6,9 +6,8 @@ import { HttpException } from "../exception/httpError";
 import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
 
 const createPost = async (req: Request, res: Response, next: NextFunction) => {
-  const communityName = req.params["communityName"];
   const username = req.user!.username;
-  const { title, content, type } = req.body;
+  const { title, content, type, communityName } = req.body;
 
   try {
     // Validate community name
@@ -61,13 +60,13 @@ const deletePost = async (req: Request, res: Response, next: NextFunction) => {
 
   try {
     // Check if post exists
-    const post = await postService.getPostById(postId);
-    const community = await communityService.getCommunityByName(post.communityName);
+    const post = await postService.getPostsWithQueries({ postId });
+    const community = await communityService.getCommunityByName(post[0].communityName);
     const userCommunityRole = await communityService.getUserCommunityRole(user.id, community.id);
 
     // Check if user is the author of the post
     if (
-      post.authorName !== user.username &&
+      post[0].authorName !== user.username &&
       user.role !== "ADMIN" &&
       userCommunityRole?.communityRole !== "MODERATOR"
     ) {
@@ -83,19 +82,23 @@ const deletePost = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const getPostsInCommunity = async (req: Request, res: Response, next: NextFunction) => {
-  const communityName = req.params["communityName"];
+const getPostsWithQueries = async (req: Request, res: Response, next: NextFunction) => {
   const cursor = req.query.cursor as string | undefined;
-  const username = req.user?.username;
+  const authorId = req.query.authorId as string | undefined;
+  const postId = req.query.postId as string | undefined;
+  const requesterId = req.user?.id;
+  const communityId = req.query.communityId as string | undefined;
 
   try {
-    // Validate community name
-    // If not found, communityService throws error
-    await communityService.getCommunityByName(communityName);
+    const posts = await postService.getPostsWithQueries({
+      requesterId,
+      authorId,
+      postId,
+      communityId,
+      cursor,
+    });
 
-    const posts = await postService.getPostsInCommunity(communityName, username, cursor);
-
-    res.status(200).json({ posts });
+    res.status(200).json(posts);
   } catch (err) {
     next(err);
   }
@@ -103,7 +106,8 @@ const getPostsInCommunity = async (req: Request, res: Response, next: NextFuncti
 
 const votePost = async (req: Request, res: Response, next: NextFunction) => {
   const postId = req.params["postId"];
-  const username = req.user!.username;
+  const userId = req.user!.id;
+  const userName = req.user!.username;
   const state = req.body.state;
 
   try {
@@ -112,27 +116,27 @@ const votePost = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     // Check if post exists
-    const post = await postService.getPostById(postId);
+    const post = await postService.getPostsWithQueries({ postId, requesterId: userId });
 
     // Check if user has voted before
-    const previousState = await postService.findUserVoteState(username, postId);
+    const previousState = post[0]?.vote[0]?.state;
 
     // Create or update vote state
-    await postService.overrideVoteState(username, postId, state);
+    await postService.overrideVoteState(userName, postId, state);
 
     // Update post score if user has voted before
     if (previousState) {
-      if (previousState.state === "UPVOTE" && state === "DOWNVOTE") {
-        await postService.updatePostScore(postId, post.score - 2);
-      } else if (previousState.state === "DOWNVOTE" && state === "UPVOTE") {
-        await postService.updatePostScore(postId, post.score + 2);
+      if (previousState === "UPVOTE" && state === "DOWNVOTE") {
+        await postService.updatePostScore(postId, post[0].score - 2);
+      } else if (previousState === "DOWNVOTE" && state === "UPVOTE") {
+        await postService.updatePostScore(postId, post[0].score + 2);
       }
     } else {
       // Update post score if user has not voted before
       if (state === "UPVOTE") {
-        await postService.updatePostScore(postId, post.score + 1);
+        await postService.updatePostScore(postId, post[0].score + 1);
       } else {
-        await postService.updatePostScore(postId, post.score - 1);
+        await postService.updatePostScore(postId, post[0].score - 1);
       }
     }
 
@@ -145,19 +149,20 @@ const votePost = async (req: Request, res: Response, next: NextFunction) => {
 const removeVote = async (req: Request, res: Response, next: NextFunction) => {
   const postId = req.params["postId"];
   const username = req.user!.username;
+  const userId = req.user!.id;
 
   try {
     // Check if post exists
-    const post = await postService.getPostById(postId, username);
-    const previousState = await postService.findUserVoteState(username, postId);
+    const post = await postService.getPostsWithQueries({ postId, requesterId: userId });
+    const previousState = post[0]?.vote[0]?.state;
 
     // Remove vote
     await postService.overrideVoteState(username, postId);
 
     // Update score
-    if (previousState?.state === "UPVOTE") {
-      await postService.updatePostScore(postId, post.score - 1);
-    } else await postService.updatePostScore(postId, post.score + 1);
+    if (previousState === "UPVOTE") {
+      await postService.updatePostScore(postId, post[0].score - 1);
+    } else await postService.updatePostScore(postId, post[0].score + 1);
 
     res.status(200).json({ message: "Vote removed" });
   } catch (err) {
@@ -175,16 +180,16 @@ const editTextPostContent = async (req: Request, res: Response, next: NextFuncti
       throw new HttpException(HttpStatusCode.BAD_REQUEST, APP_ERROR_CODE.unexpectedBody);
     }
 
-    const post = await postService.getPostById(postId);
+    const post = await postService.getPostsWithQueries({ postId });
 
-    if (post.type === PostType.MEDIA) {
+    if (post[0].type === PostType.MEDIA) {
       throw new HttpException(
         HttpStatusCode.BAD_REQUEST,
         APP_ERROR_CODE.mediaPostEditingUnsupported
       );
     }
 
-    if (post.authorName !== user.username) {
+    if (post[0].authorName !== user.username) {
       throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.insufficientPermissions);
     }
 
@@ -198,9 +203,9 @@ const editTextPostContent = async (req: Request, res: Response, next: NextFuncti
 
 export const postController = {
   createPost,
-  getPostsInCommunity,
   votePost,
   removeVote,
   deletePost,
   editTextPostContent,
+  getPostsWithQueries,
 };

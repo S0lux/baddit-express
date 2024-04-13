@@ -13,56 +13,41 @@ const createPost = async (data: {
   return await prisma.post.create({ data });
 };
 
-const getPostsInCommunity = async (communityName: string, username?: string, cursor?: string) => {
-  if (username) {
-    return await prisma.post.findMany({
-      where: { communityName, deleted: false },
-      take: 10,
-      skip: 1,
-      cursor: cursor ? { id: cursor } : undefined,
-      orderBy: { createdAt: "desc" },
-      include: {
-        Vote: {
-          where: { username },
-          select: {
-            username: false,
-            state: true,
-            postId: false,
-          },
-        },
-      },
-    });
-  }
-
+const getPostsWithQueries = async (queries: {
+  requesterId?: string;
+  authorId?: string;
+  postId?: string;
+  communityId?: string;
+  cursor?: string;
+}) => {
   return await prisma.post.findMany({
-    where: { communityName },
+    where: {
+      author: { id: queries.authorId },
+      id: queries.postId,
+      community: { id: queries.communityId },
+      deleted: false,
+    },
     take: 10,
-    skip: 1,
-    cursor: cursor ? { id: cursor } : undefined,
+    skip: queries.cursor ? 1 : 0,
+    cursor: queries.cursor ? { id: queries.cursor } : undefined,
     orderBy: { createdAt: "desc" },
-  });
-};
-
-const getPostById = async (postId: string, username?: string) => {
-  if (username) {
-    return await prisma.post.findFirst({
-      where: { id: postId },
-      include: {
-        Vote: {
-          where: { username },
-          select: {
-            username: false,
-            state: true,
-            postId: false,
-          },
+    include: {
+      vote: {
+        where: queries.requesterId
+          ? { user: { id: queries.requesterId } }
+          : { user: { id: "dummy-id" } },
+        select: {
+          state: true,
+          username: false,
+          postId: false,
         },
       },
-    });
-  }
-
-  return await prisma.post.findFirst({
-    where: { id: postId },
-    orderBy: { createdAt: "desc" },
+      author: {
+        select: {
+          avatarUrl: true,
+        },
+      },
+    },
   });
 };
 
@@ -128,9 +113,8 @@ const editTextPostContent = async (postId: string, content: string) => {
 
 export const postRepository = {
   createPost,
-  getPostsInCommunity,
-  getPostById,
   createVoteState,
+  getPostsWithQueries,
   updateVoteState,
   deleteVoteState,
   findUserVoteState,
