@@ -57,9 +57,9 @@ class communityService {
       throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.insufficientPermissions);
     }
   }
-  async updateCommunityMemberCount(communityName: string, prevMemberCount: number) {
+  async updateCommunityMemberCount(communityName: string, memberCount: number) {
     try {
-      await communityRepository.updateCommunityMemberCount(communityName, prevMemberCount);
+      await communityRepository.updateCommunityMemberCount(communityName, memberCount);
     } catch (err) {
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }

@@ -62,10 +62,8 @@ const deletePost = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Check if post exists
     const post = await postService.getPostById(postId);
-    const userCommunityRole = await communityService.getUserCommunityRole(
-      user.id,
-      post.communityName
-    );
+    const community = await communityService.getCommunityByName(post.communityName);
+    const userCommunityRole = await communityService.getUserCommunityRole(user.id, community.id);
 
     // Check if user is the author of the post
     if (

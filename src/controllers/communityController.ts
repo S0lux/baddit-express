@@ -17,7 +17,7 @@ const joinCommunity = async (req: Request, res: Response, next: NextFunction) =>
     const data = { userId: req.user!.id, communityId: community!.id };
     await communityService.createCommunityMember(data);
     //if no error has been thrown when creating member, go to this line
-    await communityService.updateCommunityMemberCount(community.name, community.memberCount);
+    await communityService.updateCommunityMemberCount(community.name, community.memberCount + 1); // this is update for joining , so just plus one, if unjoin just substract one
     return res.status(200).json({ message: "Joined" });
   } catch (error) {
     next(error);
@@ -36,7 +36,7 @@ const deleteCommunity = async (req: Request, res: Response, next: NextFunction) 
   const communityName = req.params["communityName"];
   const user = req.user!;
   try {
-    //fist check if community deleted field is false or true , if false then return comumnity
+    //First check if community deleted field is false or true , if false then return comumnity
     const community = await communityService.getCommunityByName(communityName);
     await communityService.deleteCommunityByName(community, user);
     //after change deleted field of community to false, delete all the posts in this community by change deleted field of them

@@ -36,10 +36,10 @@ const deleteCommunity = async (communityName: string) => {
   });
 };
 
-const updateCommunityMemberCount = async (communityName: string, prevMemberCount: number) => {
+const updateCommunityMemberCount = async (communityName: string, memberCount: number) => {
   return await prisma.community.update({
     where: { name: communityName },
-    data: { memberCount: prevMemberCount + 1, updateAt: new Date() },
+    data: { memberCount: memberCount, updateAt: new Date() },
   });
 };
 
