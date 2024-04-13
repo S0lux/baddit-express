@@ -48,6 +48,7 @@ model Community {
   updateAt    DateTime         @updatedAt
   User        User             @relation(fields: [ownerId], references: [id])
   user        User_Community[]
+  Post        Post[]
 }
 
 model User_Community {
@@ -62,18 +63,19 @@ model User_Community {
 }
 
 model Post {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   type          PostType
   title         String
   content       String
   mediaUrls     String[]
-  author        User     @relation(fields: [authorName], references: [username])
+  author        User      @relation(fields: [authorName], references: [username])
   authorName    String
+  community     Community @relation(fields: [communityName], references: [name])
   communityName String
-  deleted       Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  score         Int      @default(0)
+  deleted       Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  score         Int       @default(0)
   vote          Vote[]
 }
 
