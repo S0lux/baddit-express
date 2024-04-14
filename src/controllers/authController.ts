@@ -3,6 +3,8 @@ import authService from "../services/authService";
 import awsService from "../services/awsService";
 import { HttpException } from "../exception/httpError";
 import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
+import userService from "../services/userService";
+import { compareHash } from "../utils/hashFunctions";
 
 const loginUser = async (req: Request, res: Response) => {
   return res.status(200).json({ user: req.user });
@@ -47,9 +49,34 @@ const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const updatePassword = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { newPassword, oldPassword } = req.body;
+    const requester = req.user!;
+    const userInDb = await userService.getUserById(requester.id);
+
+    if (!userInDb) {
+      throw new HttpException(HttpStatusCode.NOT_FOUND, APP_ERROR_CODE.userNotFound);
+    }
+
+    const isPasswordCorrect = compareHash(oldPassword, userInDb.hashedPassword);
+
+    if (!isPasswordCorrect) {
+      throw new HttpException(HttpStatusCode.UNAUTHORIZED, APP_ERROR_CODE.wrongPassword);
+    }
+
+    await userService.updatePassword(requester.id, newPassword);
+
+    res.status(200).json({ message: "Password updated" });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const authController = {
   loginUser,
   logoutUser,
   verifyEmail,
   registerUser,
+  updatePassword,
 };

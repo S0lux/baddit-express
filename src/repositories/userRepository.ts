@@ -53,6 +53,13 @@ const cleanUpTokens = async () => {
   });
 };
 
+const updatePassword = async (userId: string, newPassword: string) => {
+  return await prisma.user.update({
+    where: { id: userId },
+    data: { hashedPassword: newPassword },
+  });
+};
+
 export const userRepository = {
   createUser,
   getUserByUsername,
@@ -62,4 +69,5 @@ export const userRepository = {
   addEmailToken,
   getEmailTokens,
   updateEmailVerified,
+  updatePassword,
 };

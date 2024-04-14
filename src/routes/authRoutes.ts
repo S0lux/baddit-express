@@ -3,6 +3,7 @@ import { authController } from "../controllers/authController";
 import passport, { AuthenticateOptions } from "passport";
 import handleAuthError from "../middlewares/handleAuthError";
 import { authValidator } from "../validators/authValidators";
+import ensureAuthenticated from "../middlewares/ensureAuthenticated";
 const router = express.Router();
 
 const authenticateOptions: AuthenticateOptions = {
@@ -171,6 +172,8 @@ router.post("/verification", authValidator.emailToken, authController.verifyEmai
  */
 router.post("/signup", authValidator.register, authController.registerUser);
 
+router.use(ensureAuthenticated);
+
 /**
  * @swagger
  * /v1/auth/logout:
@@ -187,5 +190,43 @@ router.post("/signup", authValidator.register, authController.registerUser);
  *     description: Internal server error
  */
 router.post("/logout", authController.logoutUser);
+
+/**
+ * @swagger
+ * /v1/auth/update-password:
+ *  patch:
+ *   summary: Update password
+ *   description: Update password of the user
+ *   tags: [Authentication]
+ *   requestBody:
+ *    required: true
+ *    content:
+ *     application/json:
+ *      schema:
+ *       type: object
+ *       required:
+ *        - oldPassword
+ *        - newPassword
+ *       properties:
+ *        oldPassword:
+ *         type: string
+ *         description: Old password of the user
+ *        newPassword:
+ *         type: string
+ *         description: New password of the user
+ *   responses:
+ *    200:
+ *     description: Password updated successfully
+ *    400:
+ *     description: Invalid request body
+ *    401:
+ *     description: Wrong old password or user not logged in
+ *    404:
+ *     description: User not found
+ *    500:
+ *     description: Internal server error
+ *
+ */
+router.patch("/update-password", authController.updatePassword);
 
 export default router;

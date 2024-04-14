@@ -88,4 +88,8 @@ export const APP_ERROR_CODE = {
     code: "MEDIA_POST_EDITING_UNSUPPORTED",
     message: "Editing media posts is not supported",
   },
+  wrongPassword: {
+    code: "WRONG_PASSWORD",
+    message: "Incorrect old password",
+  },
 };
