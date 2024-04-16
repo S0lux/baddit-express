@@ -21,6 +21,26 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
+const resendVerificationEmail = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = req?.user;
+
+    if (!user?.id) {
+      throw new HttpException(HttpStatusCode.UNAUTHORIZED, APP_ERROR_CODE.notLoggedIn);
+    }
+
+    if (user.emailVerified) {
+      throw new HttpException(HttpStatusCode.UNAUTHORIZED, APP_ERROR_CODE.emailAlreadyVerified);
+    }
+
+    await awsService.sendVerificationEmail(user.id);
+
+    return res.status(200).json({ message: "Email sent" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const logoutUser = async (req: Request, res: Response, next: NextFunction) => {
   return req.logout((err: any) => {
     if (err) next(err);
@@ -79,4 +99,5 @@ export const authController = {
   verifyEmail,
   registerUser,
   updatePassword,
+  resendVerificationEmail,
 };

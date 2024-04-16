@@ -47,9 +47,9 @@ const addEmailToken = async (userId: string, token: string, expireAt: Date) => {
   });
 };
 
-const cleanUpTokens = async () => {
-  return await prisma.emailToken.deleteMany({
-    where: { expireAt: { lte: new Date() } },
+const deleteEmailToken = async (token: string) => {
+  return await prisma.emailToken.delete({
+    where: { token },
   });
 };
 
@@ -65,7 +65,7 @@ export const userRepository = {
   getUserByUsername,
   getUserById,
   updateAvatar,
-  cleanUpTokens,
+  deleteEmailToken,
   addEmailToken,
   getEmailTokens,
   updateEmailVerified,

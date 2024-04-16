@@ -54,7 +54,9 @@ class emailService {
     if (matchedToken) {
       if (matchedToken.expireAt.getTime() >= Date.now()) {
         await userRepository.updateEmailVerified(userId);
+        await userRepository.deleteEmailToken(token);
       } else {
+        await userRepository.deleteEmailToken(token);
         throw new HttpException(HttpStatusCode.INVALID_TOKEN, APP_ERROR_CODE.tokenExpired);
       }
     }

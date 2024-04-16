@@ -92,4 +92,8 @@ export const APP_ERROR_CODE = {
     code: "WRONG_PASSWORD",
     message: "Incorrect old password",
   },
+  emailAlreadyVerified: {
+    code: "EMAIL_ALREADY_VERIFIED",
+    message: "Email is already verified",
+  },
 };
