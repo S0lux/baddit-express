@@ -24,6 +24,22 @@ const multerAvatarOpts: cloudinaryOptions = {
   },
 };
 
+const multerLogoOpts: cloudinaryOptions = {
+  cloudinary: cloudinary,
+  params: {
+    folder: "logo",
+    public_id: (req, file) => "logo_" + req.params["communityName"],
+  },
+};
+
+const multerBannerOpts: cloudinaryOptions = {
+  cloudinary: cloudinary,
+  params: {
+    folder: "banner",
+    public_id: (req, file) => "banner_" + req.params["communityName"],
+  },
+};
+
 const postMediaOpts: cloudinaryOptions = {
   cloudinary: cloudinary,
   params: {
@@ -34,5 +50,7 @@ const postMediaOpts: cloudinaryOptions = {
 
 export const storage = {
   avatarStorage: new CloudinaryStorage(multerAvatarOpts),
+  logoStorage: new CloudinaryStorage(multerLogoOpts),
+  bannerStorage: new CloudinaryStorage(multerBannerOpts),
   postMediaStorage: new CloudinaryStorage(postMediaOpts),
 };

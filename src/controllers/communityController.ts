@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import communityService from "../services/communityService";
 import postService from "../services/postService";
+import { HttpException } from "../exception/httpError";
+import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
 
 const createCommunity = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -47,9 +49,40 @@ const deleteCommunity = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
+const updateCommunityLogo = async (req: Request, res: Response, next: NextFunction) => {
+  const communityName = req.params["communityName"];
+  const user = req.user!;
+  try {
+    if (!req.file) {
+      throw new HttpException(HttpStatusCode.BAD_REQUEST, APP_ERROR_CODE.missingMedia);
+    }
+    const community = await communityService.getCommunityByName(communityName);
+    await communityService.updateCommunityLogo(community, user, req.file.path);
+    res.status(200).json({ message: "Logo updated successfully" });
+  } catch (err) {
+    next(err);
+  }
+};
+const updateCommunityBanner = async (req: Request, res: Response, next: NextFunction) => {
+  const communityName = req.params["communityName"];
+  const user = req.user!;
+  try {
+    if (!req.file) {
+      throw new HttpException(HttpStatusCode.BAD_REQUEST, APP_ERROR_CODE.missingMedia);
+    }
+    const community = await communityService.getCommunityByName(communityName);
+    await communityService.updateCommunityBanner(community, user, req.file.path);
+    res.status(200).json({ message: "Banner updated successfully" });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const communityController = {
   createCommunity,
   getCommunity,
   joinCommunity,
   deleteCommunity,
+  updateCommunityBanner,
+  updateCommunityLogo,
 };

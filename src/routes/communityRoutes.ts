@@ -2,6 +2,7 @@ import express from "express";
 import ensureAuthenticated from "../middlewares/ensureAuthenticated";
 import { communityController } from "../controllers/communityController";
 import { communityValidators } from "../validators/communityValidators";
+import { bannerParser, logoParser } from "../middlewares/multerParsers";
 
 const router = express.Router();
 
@@ -251,4 +252,79 @@ router.post("/:communityName/members", communityController.joinCommunity);
  */
 router.delete("/:communityName", communityController.deleteCommunity);
 
+/**
+ * @swagger
+ * /v1/communities/{communityName}/logo:
+ *  post:
+ *   summary: Update community logo
+ *   description: Update the logo of the community
+ *   tags: [Communities]
+ *   requestBody:
+ *    required: true
+ *    content:
+ *     multipart/form-data:
+ *      schema:
+ *       type: object
+ *       properties:
+ *        logo:
+ *         type: string
+ *         format: binary
+ *         description: The image to upload as logo
+ *   responses:
+ *    200:
+ *     description: Logo updated successfully
+ *    400:
+ *     description: Missing or invalid media provided for avatar (only images are allowed)
+ *    401:
+ *     description: User is not logged in
+ *    403:
+ *     description: User has no permission
+ *    404:
+ *     description: Community not found
+ *    500:
+ *     description: Internal server error
+ */
+router.post(
+  "/:communityName/logo",
+  logoParser.single("logo"),
+  communityController.updateCommunityLogo
+);
+
+/**
+ * @swagger
+ * /v1/communities/{communityName}/banner:
+ *  post:
+ *   summary: Update community banner
+ *   description: Update the banner of the community
+ *   tags: [Communities]
+ *   requestBody:
+ *    required: true
+ *    content:
+ *     multipart/form-data:
+ *      schema:
+ *       type: object
+ *       properties:
+ *        banner:
+ *         type: string
+ *         format: binary
+ *         description: The image to upload as banner
+ *   responses:
+ *    200:
+ *     description: Banner updated successfully
+ *    400:
+ *     description: Missing or invalid media provided for avatar (only images are allowed)
+ *    401:
+ *     description: User is not logged in
+ *    403:
+ *     description: User has no permission
+ *    404:
+ *     description: Community not found
+ *    500:
+ *     description: Internal server error
+ */
+router.post(
+  "/:communityName/banner",
+  bannerParser.single("banner"),
+  communityController.updateCommunityBanner
+);
 export default router;
