@@ -43,6 +43,20 @@ const updateCommunityMemberCount = async (communityName: string, memberCount: nu
   });
 };
 
+const updateLogo = async (name: string, logo: string) => {
+  return await prisma.community.update({
+    where: { name: name },
+    data: { logoUrl: logo },
+  });
+};
+
+const updateBanner = async (name: string, banner: string) => {
+  return await prisma.community.update({
+    where: { name: name },
+    data: { bannerUrl: banner },
+  });
+};
+
 export const communityRepository = {
   createCommunity,
   createCommunityModerator,
@@ -51,4 +65,6 @@ export const communityRepository = {
   getUserCommunityRole,
   deleteCommunity,
   updateCommunityMemberCount,
+  updateLogo,
+  updateBanner,
 };

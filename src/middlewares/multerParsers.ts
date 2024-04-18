@@ -14,6 +14,28 @@ export const avatarParser = multer({
   },
 });
 
+export const logoParser = multer({
+  storage: storage.logoStorage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith("image")) {
+      cb(null, true);
+    } else {
+      cb(new HttpException(HttpStatusCode.BAD_REQUEST, APP_ERROR_CODE.onlyImageAllowed));
+    }
+  },
+});
+
+export const bannerParser = multer({
+  storage: storage.bannerStorage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith("image")) {
+      cb(null, true);
+    } else {
+      cb(new HttpException(HttpStatusCode.BAD_REQUEST, APP_ERROR_CODE.onlyImageAllowed));
+    }
+  },
+});
+
 export const postMediaParser = multer({
   storage: storage.postMediaStorage,
   fileFilter: (req, file, cb) => {

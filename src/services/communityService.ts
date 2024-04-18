@@ -64,6 +64,40 @@ class communityService {
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }
   }
+  async updateCommunityLogo(community: Community, user: Express.User, logoUrl: string) {
+    const userInCommunity = await this.getUserCommunityRole(user.id, community.id);
+    const ownerId = community.ownerId;
+    if (
+      userInCommunity?.communityRole === CommunityRole.MODERATOR ||
+      ownerId === user.id ||
+      user.role === UserRole.ADMIN
+    ) {
+      try {
+        await communityRepository.updateLogo(community.name, logoUrl);
+      } catch (err) {
+        throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
+      }
+    } else {
+      throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.insufficientPermissions);
+    }
+  }
+  async updateCommunityBanner(community: Community, user: Express.User, bannerUrl: string) {
+    const userInCommunity = await this.getUserCommunityRole(user.id, community.id);
+    const ownerId = community.ownerId;
+    if (
+      userInCommunity?.communityRole === CommunityRole.MODERATOR ||
+      ownerId === user.id ||
+      user.role === UserRole.ADMIN
+    ) {
+      try {
+        await communityRepository.updateLogo(community.name, bannerUrl);
+      } catch (err) {
+        throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
+      }
+    } else {
+      throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.insufficientPermissions);
+    }
+  }
 }
 
 export default new communityService();
