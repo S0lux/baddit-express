@@ -166,7 +166,7 @@ router.get("/:communityName", communityController.getCommunity);
  *  get:
  *   summary: Get communiteies with queries
  *   description: Get communiteies with queries
- *   tags: [Posts]
+ *   tags: [Communities]
  *   parameters:
  *    - in: query
  *      name: cursor
