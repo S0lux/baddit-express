@@ -29,6 +29,23 @@ const getUserCommunityRole = async (userId: string, communityId: string) => {
   });
 };
 
+const getCommunitiesWithQueries = async (name: string, cursor?: string) => {
+  return await prisma.community.findMany({
+    take: 10,
+    skip: cursor ? 1 : 0,
+    cursor: cursor ? { id: cursor } : undefined,
+    where: {
+      name: {
+        startsWith: name,
+      },
+      deleted: false,
+    },
+    orderBy: {
+      //memberCount: "desc",
+    },
+  });
+};
+
 const deleteCommunity = async (communityName: string) => {
   return await prisma.community.update({
     where: { name: communityName },
@@ -62,6 +79,7 @@ export const communityRepository = {
   createCommunityModerator,
   createCommunityMember,
   getCommunityByName,
+  getCommunitiesWithQueries,
   getUserCommunityRole,
   deleteCommunity,
   updateCommunityMemberCount,

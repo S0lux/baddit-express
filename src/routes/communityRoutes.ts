@@ -160,7 +160,29 @@ const router = express.Router();
  *
  */
 router.get("/:communityName", communityController.getCommunity);
-
+/**
+ * @swagger
+ * /v1/communities:
+ *  get:
+ *   summary: Get communiteies with queries
+ *   description: Get communiteies with queries
+ *   tags: [Posts]
+ *   parameters:
+ *    - in: query
+ *      name: cursor
+ *      schema:
+ *        type: string
+ *    - in: query
+ *      name: name
+ *      schema:
+ *        type: string
+ *   responses:
+ *    200:
+ *     description: Communities retrieved successfully
+ *    500:
+ *     description: Internal server error
+ */
+router.get("/", communityController.getCommunitiesWithQueries);
 router.use(ensureAuthenticated);
 
 /**
