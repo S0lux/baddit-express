@@ -95,16 +95,16 @@ class PostService {
         // Make sure all database operations are successful or none at all
         await prisma.$transaction(async (tx) => {
           await postRepository.overrideVoteState(state, username, post.id, tx);
-          const previousState = post.vote[0].state;
+          const previousState = post.vote[0]?.state;
 
           if (previousState === VoteState.UPVOTE && state === VoteState.DOWNVOTE) {
-            await postRepository.updatePostScore(post.id, post.score - 2, tx);
+            await postRepository.updatePostScoreBy(post.id, -2, tx);
           } else if (previousState === VoteState.DOWNVOTE && state === VoteState.UPVOTE) {
-            await postRepository.updatePostScore(post.id, post.score + 2, tx);
+            await postRepository.updatePostScoreBy(post.id, 2, tx);
           } else
-            await postRepository.updatePostScore(
+            await postRepository.updatePostScoreBy(
               post.id,
-              post.score + (state === VoteState.UPVOTE ? 1 : -1),
+              state === VoteState.UPVOTE ? 1 : -1,
               tx
             );
         });
@@ -112,14 +112,14 @@ class PostService {
 
       // If no state is provided, delete the vote state
       if (!state) {
-        const hasVoted = post.vote[0].state;
+        const hasVoted = post.vote[0]?.state;
         // Make sure all database operations are successful or none at all
         await prisma.$transaction(async (tx) => {
-          await postRepository.deleteVoteState(username, post.id);
+          await postRepository.deleteVoteState(username, post.id, tx);
           if (hasVoted === VoteState.UPVOTE) {
-            await postRepository.updatePostScore(post.id, post.score - 1, tx);
+            await postRepository.updatePostScoreBy(post.id, -1, tx);
           } else {
-            await postRepository.updatePostScore(post.id, post.score + 1, tx);
+            await postRepository.updatePostScoreBy(post.id, 1, tx);
           }
         });
       }

@@ -92,7 +92,7 @@ const findUserVoteState = async (username: string, postId: string) => {
 
 const updatePostScore = async (
   postId: string,
-  score: number,
+  value: number,
   tx?: Omit<
     PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
     "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
@@ -101,7 +101,11 @@ const updatePostScore = async (
   const db = tx || prisma;
   return await db.post.update({
     where: { id: postId },
-    data: { score },
+    data: {
+      score: {
+        increment: value,
+      },
+    },
   });
 };
 
