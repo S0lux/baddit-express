@@ -210,7 +210,7 @@ router.put("/:postId", postController.editTextPostContent);
  *     description: Post not found
  *
  */
-router.post("/:postId/votes", postController.votePost);
+router.post("/:postId/votes", postValidators.vote, postController.votePost);
 
 /**
  * @swagger

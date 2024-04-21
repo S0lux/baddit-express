@@ -51,20 +51,11 @@ const getPostsWithQueries = async (queries: {
   });
 };
 
-const createVoteState = async (username: string, postId: string, state: VoteState) => {
-  return await prisma.vote.create({
-    data: {
-      username,
-      postId,
-      state,
-    },
-  });
-};
-
-const updateVoteState = async (username: string, postId: string, state: VoteState) => {
-  return await prisma.vote.update({
+const overrideVoteState = async (state: VoteState, username: string, postId: string) => {
+  return prisma.vote.upsert({
     where: { username_postId: { postId, username } },
-    data: { state },
+    update: { state },
+    create: { state, username, postId },
   });
 };
 
@@ -113,12 +104,11 @@ const editTextPostContent = async (postId: string, content: string) => {
 
 export const postRepository = {
   createPost,
-  createVoteState,
   getPostsWithQueries,
-  updateVoteState,
   deleteVoteState,
   findUserVoteState,
   updatePostScore,
+  overrideVoteState,
   deletePost,
   deleteAllPostsInCommunity,
   editTextPostContent,

@@ -1,21 +1,62 @@
-import { PostType, VoteState } from "@prisma/client";
+import {
+  Community,
+  Post,
+  PostType,
+  Prisma,
+  PrismaClient,
+  User_Community,
+  Vote,
+  VoteState,
+} from "@prisma/client";
 import { postRepository } from "../repositories/postRepositorry";
 import { HttpException } from "../exception/httpError";
 import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
 
+const prisma = new PrismaClient();
+
 class PostService {
-  async createPost(data: {
-    type: PostType;
-    title: string;
-    content: string;
-    authorName: string;
-    communityName: string;
-    mediaUrls?: string[];
-  }) {
+  async createPost(
+    title: string,
+    content: string,
+    type: PostType,
+    community: Community,
+    username: string,
+    mediaArray?: Express.Multer.File[]
+  ) {
+    // Build post data
+    let postData;
+
+    if (type === PostType.TEXT || type === PostType.LINK) {
+      postData = {
+        title,
+        content,
+        type,
+        authorName: username,
+        communityName: community.name,
+      };
+    } else {
+      // Validate media files
+      if (!mediaArray || mediaArray.length === 0) {
+        throw new HttpException(HttpStatusCode.BAD_REQUEST, APP_ERROR_CODE.missingMedia);
+      }
+
+      const mediaUrls = mediaArray.map((file) => file.path);
+
+      // Build post data
+      postData = {
+        title,
+        content: "",
+        type,
+        authorName: username,
+        communityName: community.name,
+        mediaUrls: mediaUrls,
+      };
+    }
+
     try {
       // Create post
       // Will cause error when database operation fails
-      await postRepository.createPost(data);
+      await postRepository.createPost(postData);
     } catch (err) {
       throw new HttpException(
         HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -36,39 +77,49 @@ class PostService {
       // Will cause error when database operation fails
       return await postRepository.getPostsWithQueries(queries);
     } catch (err) {
-      throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
-    }
-  }
-
-  async overrideVoteState(username: string, postId: string, state?: VoteState) {
-    try {
-      if (state) {
-        const hasVoted = await postRepository.findUserVoteState(username, postId);
-
-        if (!hasVoted) {
-          await postRepository.createVoteState(username, postId, state);
-        } else {
-          await postRepository.updateVoteState(username, postId, state);
-        }
-      }
-
-      if (!state) {
-        const hasVoted = await postRepository.findUserVoteState(username, postId);
-
-        if (hasVoted) {
-          await postRepository.deleteVoteState(username, postId);
-        }
-      }
-    } catch (err) {
       console.log(err);
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }
   }
 
-  async updatePostScore(postId: string, score: number) {
+  async overrideVoteState(
+    username: string,
+    post: Prisma.PostGetPayload<{
+      include: { vote: { select: { state: true } }; author: { select: { avatarUrl: true } } };
+    }>,
+    state?: VoteState
+  ) {
     try {
-      await postRepository.updatePostScore(postId, score);
+      // If a state is provided, update the vote state and post score of the post
+      if (state) {
+        // Make sure all database operations are successful or none at all
+        await prisma.$transaction(async () => {
+          await postRepository.overrideVoteState(state, username, post.id);
+          const previousState = post.vote[0].state;
+
+          if (previousState === VoteState.UPVOTE && state === VoteState.DOWNVOTE) {
+            await postRepository.updatePostScore(post.id, post.score - 2);
+          } else if (previousState === VoteState.DOWNVOTE && state === VoteState.UPVOTE) {
+            await postRepository.updatePostScore(post.id, post.score + 2);
+          }
+        });
+      }
+
+      // If no state is provided, delete the vote state
+      if (!state) {
+        const hasVoted = post.vote[0].state;
+        // Make sure all database operations are successful or none at all
+        await prisma.$transaction(async () => {
+          await postRepository.deleteVoteState(username, post.id);
+          if (hasVoted === VoteState.UPVOTE) {
+            await postRepository.updatePostScore(post.id, post.score - 1);
+          } else {
+            await postRepository.updatePostScore(post.id, post.score + 1);
+          }
+        });
+      }
     } catch (err) {
+      console.log(err);
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }
   }
@@ -77,8 +128,21 @@ class PostService {
     return await postRepository.findUserVoteState(username, postId);
   }
 
-  async deletePost(postId: string) {
+  async deletePost(
+    postId: string,
+    post: Post[],
+    user: Express.User,
+    userCommunityRole: User_Community | null
+  ) {
     try {
+      // Check if user is the author of the post
+      if (
+        post[0].authorName !== user.username &&
+        user.role !== "ADMIN" &&
+        userCommunityRole?.communityRole !== "MODERATOR"
+      ) {
+        throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.insufficientPermissions);
+      }
       await postRepository.deletePost(postId);
     } catch (err) {
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
@@ -93,9 +157,30 @@ class PostService {
     }
   }
 
-  async editTextPostContent(postId: string, content: string) {
+  async editTextPostContent(
+    post: Prisma.PostGetPayload<{
+      include: { vote: { select: { state: true } }; author: { select: { avatarUrl: true } } };
+    }>,
+    content: string,
+    user: Express.User
+  ) {
+    if (content === "") {
+      throw new HttpException(HttpStatusCode.BAD_REQUEST, APP_ERROR_CODE.unexpectedBody);
+    }
+
+    if (post.type === PostType.MEDIA) {
+      throw new HttpException(
+        HttpStatusCode.BAD_REQUEST,
+        APP_ERROR_CODE.mediaPostEditingUnsupported
+      );
+    }
+
+    if (post.authorName !== user.username) {
+      throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.insufficientPermissions);
+    }
+
     try {
-      await postRepository.editTextPostContent(postId, content);
+      await postRepository.editTextPostContent(post.id, content);
     } catch (err) {
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }
