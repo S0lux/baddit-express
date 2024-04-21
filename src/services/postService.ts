@@ -93,15 +93,20 @@ class PostService {
       // If a state is provided, update the vote state and post score of the post
       if (state) {
         // Make sure all database operations are successful or none at all
-        await prisma.$transaction(async () => {
-          await postRepository.overrideVoteState(state, username, post.id);
+        await prisma.$transaction(async (tx) => {
+          await postRepository.overrideVoteState(state, username, post.id, tx);
           const previousState = post.vote[0].state;
 
           if (previousState === VoteState.UPVOTE && state === VoteState.DOWNVOTE) {
-            await postRepository.updatePostScore(post.id, post.score - 2);
+            await postRepository.updatePostScore(post.id, post.score - 2, tx);
           } else if (previousState === VoteState.DOWNVOTE && state === VoteState.UPVOTE) {
-            await postRepository.updatePostScore(post.id, post.score + 2);
-          }
+            await postRepository.updatePostScore(post.id, post.score + 2, tx);
+          } else
+            await postRepository.updatePostScore(
+              post.id,
+              post.score + (state === VoteState.UPVOTE ? 1 : -1),
+              tx
+            );
         });
       }
 
@@ -109,12 +114,12 @@ class PostService {
       if (!state) {
         const hasVoted = post.vote[0].state;
         // Make sure all database operations are successful or none at all
-        await prisma.$transaction(async () => {
+        await prisma.$transaction(async (tx) => {
           await postRepository.deleteVoteState(username, post.id);
           if (hasVoted === VoteState.UPVOTE) {
-            await postRepository.updatePostScore(post.id, post.score - 1);
+            await postRepository.updatePostScore(post.id, post.score - 1, tx);
           } else {
-            await postRepository.updatePostScore(post.id, post.score + 1);
+            await postRepository.updatePostScore(post.id, post.score + 1, tx);
           }
         });
       }

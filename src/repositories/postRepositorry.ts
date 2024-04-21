@@ -1,4 +1,5 @@
-import { PostType, PrismaClient, VoteState } from "@prisma/client";
+import { PostType, Prisma, PrismaClient, VoteState } from "@prisma/client";
+import { DefaultArgs } from "@prisma/client/runtime/library";
 
 const prisma = new PrismaClient();
 
@@ -51,16 +52,34 @@ const getPostsWithQueries = async (queries: {
   });
 };
 
-const overrideVoteState = async (state: VoteState, username: string, postId: string) => {
-  return prisma.vote.upsert({
+const overrideVoteState = async (
+  state: VoteState,
+  username: string,
+  postId: string,
+  tx?: Omit<
+    PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+    "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+  >
+) => {
+  const db = tx || prisma;
+
+  return db.vote.upsert({
     where: { username_postId: { postId, username } },
     update: { state },
     create: { state, username, postId },
   });
 };
 
-const deleteVoteState = async (username: string, postId: string) => {
-  return await prisma.vote.delete({
+const deleteVoteState = async (
+  username: string,
+  postId: string,
+  tx?: Omit<
+    PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+    "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+  >
+) => {
+  const db = tx || prisma;
+  return await db.vote.delete({
     where: { username_postId: { postId, username } },
   });
 };
@@ -71,8 +90,16 @@ const findUserVoteState = async (username: string, postId: string) => {
   });
 };
 
-const updatePostScore = async (postId: string, score: number) => {
-  return await prisma.post.update({
+const updatePostScore = async (
+  postId: string,
+  score: number,
+  tx?: Omit<
+    PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+    "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+  >
+) => {
+  const db = tx || prisma;
+  return await db.post.update({
     where: { id: postId },
     data: { score },
   });
