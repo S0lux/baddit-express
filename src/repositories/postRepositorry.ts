@@ -90,7 +90,7 @@ const findUserVoteState = async (username: string, postId: string) => {
   });
 };
 
-const updatePostScore = async (
+const updatePostScoreBy = async (
   postId: string,
   value: number,
   tx?: Omit<
@@ -138,7 +138,7 @@ export const postRepository = {
   getPostsWithQueries,
   deleteVoteState,
   findUserVoteState,
-  updatePostScore,
+  updatePostScoreBy,
   overrideVoteState,
   deletePost,
   deleteAllPostsInCommunity,
