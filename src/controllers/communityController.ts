@@ -34,6 +34,17 @@ const getCommunity = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
+const getCommunitiesWithQueries = async (req: Request, res: Response, next: NextFunction) => {
+  const cursor = req.query.cursor as string | undefined;
+  const name = req.query.name as string;
+  try {
+    const communities = await communityService.getCommunitiesWithQueries(name, cursor);
+    return res.status(200).json(communities);
+  } catch (err) {
+    next(err);
+  }
+};
+
 const deleteCommunity = async (req: Request, res: Response, next: NextFunction) => {
   const communityName = req.params["communityName"];
   const user = req.user!;
@@ -81,6 +92,7 @@ const updateCommunityBanner = async (req: Request, res: Response, next: NextFunc
 export const communityController = {
   createCommunity,
   getCommunity,
+  getCommunitiesWithQueries,
   joinCommunity,
   deleteCommunity,
   updateCommunityBanner,

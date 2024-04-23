@@ -35,6 +35,13 @@ class communityService {
   async getUserCommunityRole(userid: string, communityId: string) {
     return await communityRepository.getUserCommunityRole(userid, communityId);
   }
+  async getCommunitiesWithQueries(name: string, cursor?: string) {
+    try {
+      return await communityRepository.getCommunitiesWithQueries(name, cursor);
+    } catch (err) {
+      throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
+    }
+  }
   async deleteCommunityByName(community: Community, user: Express.User) {
     const userInCommunity = await this.getUserCommunityRole(user.id, community.id);
     const ownerId = community.ownerId;
