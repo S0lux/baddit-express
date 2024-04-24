@@ -5,7 +5,7 @@ import {
   Prisma,
   PrismaClient,
   User_Community,
-  Vote,
+  PostVote,
   VoteState,
 } from "@prisma/client";
 import { postRepository } from "../repositories/postRepositorry";
@@ -20,7 +20,7 @@ class PostService {
     content: string,
     type: PostType,
     community: Community,
-    username: string,
+    userId: string,
     mediaArray?: Express.Multer.File[]
   ) {
     // Build post data
@@ -31,7 +31,7 @@ class PostService {
         title,
         content,
         type,
-        authorName: username,
+        authorId: userId,
         communityName: community.name,
       };
     } else {
@@ -47,7 +47,7 @@ class PostService {
         title,
         content: "",
         type,
-        authorName: username,
+        authorId: userId,
         communityName: community.name,
         mediaUrls: mediaUrls,
       };
@@ -83,7 +83,7 @@ class PostService {
   }
 
   async overrideVoteState(
-    username: string,
+    userId: string,
     post: Prisma.PostGetPayload<{
       include: { vote: { select: { state: true } }; author: { select: { avatarUrl: true } } };
     }>,
@@ -94,7 +94,7 @@ class PostService {
       if (state) {
         // Make sure all database operations are successful or none at all
         await prisma.$transaction(async (tx) => {
-          await postRepository.overrideVoteState(state, username, post.id, tx);
+          await postRepository.overrideVoteState(state, userId, post.id, tx);
           const previousState = post.vote[0]?.state;
 
           if (previousState === VoteState.UPVOTE && state === VoteState.DOWNVOTE) {
@@ -115,7 +115,7 @@ class PostService {
         const hasVoted = post.vote[0]?.state;
         // Make sure all database operations are successful or none at all
         await prisma.$transaction(async (tx) => {
-          await postRepository.deleteVoteState(username, post.id, tx);
+          await postRepository.deleteVoteState(userId, post.id, tx);
           if (hasVoted === VoteState.UPVOTE) {
             await postRepository.updatePostScoreBy(post.id, -1, tx);
           } else {
@@ -129,8 +129,8 @@ class PostService {
     }
   }
 
-  async findUserVoteState(username: string, postId: string) {
-    return await postRepository.findUserVoteState(username, postId);
+  async findUserVoteState(userId: string, postId: string) {
+    return await postRepository.findUserVoteState(userId, postId);
   }
 
   async deletePost(
@@ -142,7 +142,7 @@ class PostService {
     try {
       // Check if user is the author of the post
       if (
-        post[0].authorName !== user.username &&
+        post[0].authorId !== user.id &&
         user.role !== "ADMIN" &&
         userCommunityRole?.communityRole !== "MODERATOR"
       ) {
@@ -180,7 +180,7 @@ class PostService {
       );
     }
 
-    if (post.authorName !== user.username) {
+    if (post.authorId !== user.id) {
       throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.insufficientPermissions);
     }
 

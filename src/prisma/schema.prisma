@@ -22,7 +22,9 @@ model User {
   emailTokens             EmailToken[]
   communitiesParticipated User_Community[]
   Post                    Post[]
-  Vote                    Vote[]
+  PostVote                PostVote[]
+  Comment                 Comment[]
+  CommentVote             CommentVote[]
 }
 
 model EmailToken {
@@ -63,30 +65,53 @@ model User_Community {
 }
 
 model Post {
-  id            String    @id @default(uuid())
+  id            String     @id @default(uuid())
   type          PostType
   title         String
   content       String
   mediaUrls     String[]
-  author        User      @relation(fields: [authorName], references: [username])
-  authorName    String
-  community     Community @relation(fields: [communityName], references: [name])
+  author        User       @relation(fields: [authorId], references: [id])
+  authorId      String
+  community     Community  @relation(fields: [communityName], references: [name])
   communityName String
-  deleted       Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  score         Int       @default(0)
-  vote          Vote[]
+  deleted       Boolean    @default(false)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  score         Int        @default(0)
+  vote          PostVote[]
 }
 
-model Vote {
-  user     User      @relation(fields: [username], references: [username])
-  username String
-  post     Post      @relation(fields: [postId], references: [id])
-  postId   String
-  state    VoteState
+model PostVote {
+  user   User      @relation(fields: [userId], references: [id])
+  userId String
+  post   Post      @relation(fields: [postId], references: [id])
+  postId String
+  state  VoteState
 
-  @@id([username, postId])
+  @@id([userId, postId])
+}
+
+model Comment {
+  id          String        @id @default(uuid())
+  content     String
+  author      User          @relation(fields: [authorId], references: [id])
+  authorId    String
+  createAt    DateTime      @default(now())
+  updateAt    DateTime      @updatedAt
+  parent      Comment?      @relation("Comment_Relations", fields: [parentId], references: [id])
+  parentId    String?
+  children    Comment[]     @relation("Comment_Relations")
+  CommentVote CommentVote[]
+}
+
+model CommentVote {
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  comment   Comment   @relation(fields: [commentId], references: [id])
+  commentId String
+  state     VoteState
+
+  @@id([userId, commentId])
 }
 
 enum UserRole {
