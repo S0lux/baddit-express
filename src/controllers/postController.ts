@@ -6,7 +6,7 @@ import { postBodyValidator } from "../validators/schemas/postBody";
 import { voteBodyValidator } from "../validators/schemas/voteBody";
 
 const createPost = async (req: Request, res: Response, next: NextFunction) => {
-  const username = req.user!.username;
+  const userId = req.user!.id;
   const { title, content, type, communityName }: z.infer<typeof postBodyValidator> = req.body;
 
   try {
@@ -20,7 +20,7 @@ const createPost = async (req: Request, res: Response, next: NextFunction) => {
       content,
       type,
       community,
-      username,
+      userId,
       req.files as Express.Multer.File[]
     );
 
@@ -72,7 +72,7 @@ const getPostsWithQueries = async (req: Request, res: Response, next: NextFuncti
 
 const votePost = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { username, id } = req.user!;
+    const { id } = req.user!;
 
     const { postId, state }: z.infer<typeof voteBodyValidator> = {
       postId: req.params["postId"],
@@ -81,7 +81,7 @@ const votePost = async (req: Request, res: Response, next: NextFunction) => {
 
     // Check if post exists
     const post = await postService.getPostsWithQueries({ postId, requesterId: id });
-    await postService.overrideVoteState(username, post[0], state);
+    await postService.overrideVoteState(id, post[0], state);
     res.status(200).json({ message: "Vote state updated" });
   } catch (err) {
     console.log(err);
@@ -90,13 +90,13 @@ const votePost = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const removeVote = async (req: Request, res: Response, next: NextFunction) => {
-  const { username, id } = req.user!;
+  const { id } = req.user!;
   const postId = req.params["postId"];
 
   try {
     // Check if post exists
     const post = await postService.getPostsWithQueries({ postId, requesterId: id });
-    await postService.overrideVoteState(username, post[0]);
+    await postService.overrideVoteState(id, post[0]);
     res.status(200).json({ message: "Vote state removed" });
   } catch (err) {
     next(err);

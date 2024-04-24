@@ -7,7 +7,7 @@ const createPost = async (data: {
   type: PostType;
   title: string;
   content: string;
-  authorName: string;
+  authorId: string;
   communityName: string;
   mediaUrls?: string[];
 }) => {
@@ -39,7 +39,7 @@ const getPostsWithQueries = async (queries: {
           : { user: { id: "dummy-id" } },
         select: {
           state: true,
-          username: false,
+          userId: false,
           postId: false,
         },
       },
@@ -54,7 +54,7 @@ const getPostsWithQueries = async (queries: {
 
 const overrideVoteState = async (
   state: VoteState,
-  username: string,
+  userId: string,
   postId: string,
   tx?: Omit<
     PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
@@ -63,15 +63,15 @@ const overrideVoteState = async (
 ) => {
   const db = tx || prisma;
 
-  return db.vote.upsert({
-    where: { username_postId: { postId, username } },
+  return db.postVote.upsert({
+    where: { userId_postId: { postId, userId } },
     update: { state },
-    create: { state, username, postId },
+    create: { state, userId, postId },
   });
 };
 
 const deleteVoteState = async (
-  username: string,
+  userId: string,
   postId: string,
   tx?: Omit<
     PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
@@ -79,14 +79,14 @@ const deleteVoteState = async (
   >
 ) => {
   const db = tx || prisma;
-  return await db.vote.delete({
-    where: { username_postId: { postId, username } },
+  return await db.postVote.delete({
+    where: { userId_postId: { postId, userId } },
   });
 };
 
-const findUserVoteState = async (username: string, postId: string) => {
-  return await prisma.vote.findUnique({
-    where: { username_postId: { postId, username } },
+const findUserVoteState = async (userId: string, postId: string) => {
+  return await prisma.postVote.findUnique({
+    where: { userId_postId: { postId, userId } },
   });
 };
 
