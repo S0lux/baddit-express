@@ -145,23 +145,6 @@ router.post("/verification", authValidator.emailToken, authController.verifyEmai
 
 /**
  * @swagger
- * /v1/auth/verification:
- *  get:
- *   summary: Request new verification email
- *   description: Request new verification email to be sent to the user's email
- *   tags: [Authentication]
- *   responses:
- *    200:
- *     description: Email sent
- *    401:
- *     description: User not logged in or email already verified
- *    500:
- *     description: Internal server error
- */
-router.get("/verification", authController.resendVerificationEmail);
-
-/**
- * @swagger
  * /v1/auth/signup:
  *  post:
  *   summary: Register user
@@ -190,6 +173,23 @@ router.get("/verification", authController.resendVerificationEmail);
 router.post("/signup", authValidator.register, authController.registerUser);
 
 router.use(ensureAuthenticated);
+
+/**
+ * @swagger
+ * /v1/auth/verification:
+ *  get:
+ *   summary: Request new verification email
+ *   description: Request new verification email to be sent to the user's email
+ *   tags: [Authentication]
+ *   responses:
+ *    200:
+ *     description: Email sent
+ *    401:
+ *     description: User not logged in or email already verified
+ *    500:
+ *     description: Internal server error
+ */
+router.get("/verification", authController.resendVerificationEmail);
 
 /**
  * @swagger

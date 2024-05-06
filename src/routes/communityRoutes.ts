@@ -1,8 +1,8 @@
 import express from "express";
-import ensureAuthenticated from "../middlewares/ensureAuthenticated";
 import { communityController } from "../controllers/communityController";
 import { communityValidators } from "../validators/communityValidators";
 import { bannerParser, logoParser } from "../middlewares/multerParsers";
+import ensureEmailVerified from "../middlewares/ensureEmailVerified";
 
 const router = express.Router();
 
@@ -183,7 +183,8 @@ router.get("/:communityName", communityController.getCommunity);
  *     description: Internal server error
  */
 router.get("/", communityController.getCommunitiesWithQueries);
-router.use(ensureAuthenticated);
+
+router.use(ensureEmailVerified);
 
 /**
  * @swagger
