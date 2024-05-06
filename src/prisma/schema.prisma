@@ -79,6 +79,7 @@ model Post {
   updatedAt     DateTime   @updatedAt
   score         Int        @default(0)
   vote          PostVote[]
+  comments      Comment[]
 }
 
 model PostVote {
@@ -96,11 +97,15 @@ model Comment {
   content     String
   author      User          @relation(fields: [authorId], references: [id])
   authorId    String
-  createAt    DateTime      @default(now())
-  updateAt    DateTime      @updatedAt
   parent      Comment?      @relation("Comment_Relations", fields: [parentId], references: [id])
   parentId    String?
+  post        Post?         @relation(fields: [postId], references: [id])
+  postId      String?
+  deleted     Boolean       @default(false)
+  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime      @default(now())
   children    Comment[]     @relation("Comment_Relations")
+  score       Int           @default(0)
   CommentVote CommentVote[]
 }
 

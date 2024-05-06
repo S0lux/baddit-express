@@ -76,6 +76,11 @@ export const APP_ERROR_CODE = {
     message: "Failed to create post",
   },
 
+  createCommentFailed: {
+    code: "CREATE_COMMENT_FAILED",
+    message: "Failed to create comment",
+  },
+
   onlyImageAllowed: {
     code: "ONLY_IMAGE_ALLOWED",
     message: "Only images are allowed",
