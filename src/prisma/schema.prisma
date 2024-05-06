@@ -105,6 +105,7 @@ model Comment {
   updatedAt   DateTime      @updatedAt
   createdAt   DateTime      @default(now())
   children    Comment[]     @relation("Comment_Relations")
+  score       Int           @default(0)
   CommentVote CommentVote[]
 }
 
