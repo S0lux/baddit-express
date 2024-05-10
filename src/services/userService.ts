@@ -2,6 +2,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
 import { HttpException } from "../exception/httpError";
 import { userRepository } from "../repositories/userRepository";
+import { generateHash } from "../utils/hashFunctions";
 
 class userService {
   async updateUserAvatar(id: string, avatarUrl: string) {
@@ -22,7 +23,7 @@ class userService {
 
   async updatePassword(userId: string, newPassword: string) {
     try {
-      await userRepository.updatePassword(userId, newPassword);
+      await userRepository.updatePassword(userId, generateHash(newPassword));
     } catch (err) {
       if (err instanceof PrismaClientKnownRequestError) {
         if (err.code === "P2016") {
