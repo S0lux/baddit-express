@@ -4,6 +4,6 @@ const whitelist = ["http://localhost:3000", "http://localhost:3001", "https://ba
 
 export const corsOptions: CorsOptions = {
   origin: whitelist,
-  methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
+  methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD", "PATCH", "DELETE"],
   credentials: true,
 };
