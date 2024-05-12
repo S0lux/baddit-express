@@ -11,7 +11,7 @@ function reformatPosts(posts: Posts[]) {
     title: post.title,
     content: post.content,
     score: post.score,
-    voteState: post.vote[0]?.state || "NONE",
+    voteState: post.vote[0]?.state || null,
     commentCount: post._count.comments,
     author: {
       id: post.authorId,
