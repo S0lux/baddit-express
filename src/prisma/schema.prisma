@@ -16,6 +16,7 @@ model User {
   avatarUrl               String           @default("https://placehold.co/100x100/orange/white?text=avatar")
   status                  Status           @default(STANDARD)
   role                    UserRole         @default(USER)
+  gender                  Gender           @default(Unknown)
   registeredAt            DateTime         @default(now())
   updateAt                DateTime         @updatedAt
   communitiesOwned        Community[]
@@ -143,4 +144,10 @@ enum PostType {
 enum VoteState {
   UPVOTE
   DOWNVOTE
+}
+
+enum Gender {
+  Male
+  Female
+  Unknown
 }

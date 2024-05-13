@@ -37,17 +37,10 @@ const getPostsWithQueries = async (queries: {
         where: queries.requesterId
           ? { user: { id: queries.requesterId } }
           : { user: { id: "dummy-id" } },
-        select: {
-          state: true,
-          userId: false,
-          postId: false,
-        },
       },
-      author: {
-        select: {
-          avatarUrl: true,
-        },
-      },
+      author: true,
+      community: true,
+      _count: { select: { comments: true } },
     },
   });
 };

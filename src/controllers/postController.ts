@@ -3,7 +3,8 @@ import communityService from "../services/communityService";
 import postService from "../services/postService";
 import { z } from "zod";
 import { postBodyValidator } from "../validators/schemas/postBody";
-import { voteBodyValidator } from "../validators/schemas/voteBody";
+import { votePostBodyValidator } from "../validators/schemas/votePostBody";
+import { reformatters } from "../utils/reformatters";
 
 const createPost = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.user!.id;
@@ -64,7 +65,7 @@ const getPostsWithQueries = async (req: Request, res: Response, next: NextFuncti
       cursor,
     });
 
-    res.status(200).json(posts);
+    res.status(200).json(reformatters.reformatPosts(posts));
   } catch (err) {
     next(err);
   }
@@ -74,7 +75,7 @@ const votePost = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.user!;
 
-    const { postId, state }: z.infer<typeof voteBodyValidator> = {
+    const { postId, state }: z.infer<typeof votePostBodyValidator> = {
       postId: req.params["postId"],
       state: req.body.state,
     };
