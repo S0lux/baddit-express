@@ -3,6 +3,13 @@ import { DefaultArgs } from "@prisma/client/runtime/library";
 
 const prisma = new PrismaClient();
 
+type Comment = Prisma.CommentGetPayload<{
+  include: {
+    children: true;
+    CommentVote: { select: { state: true; userId: false; commentId: false } };
+  };
+}>;
+
 interface IComment {
   id: string;
   content: string;
@@ -35,12 +42,12 @@ const getCommentsWithQueries = async (queries: {
   const rootComments = await prisma.comment.findMany({
     where: {
       id: queries.commentId,
-      author: { id: queries.authorId },
-      postId: queries.postId,
       parentId: queries.commentId ? undefined : null,
       deleted: false,
+      postId: queries.postId,
+      authorId: queries.authorId,
     },
-    take: 10,
+    take: 15,
     skip: queries.cursor ? 1 : 0,
     cursor: queries.cursor ? { id: queries.cursor } : undefined,
     orderBy: { createdAt: "desc" },
@@ -64,47 +71,46 @@ const getCommentsWithQueries = async (queries: {
     },
   });
 
-  await getNestedCommentsRecursively(rootComments, queries.requesterId, queries.commentId);
+  await getNestedCommentsRecursively(rootComments, queries.requesterId, queries?.commentId);
   return rootComments;
 };
 
 //Add-on function
 async function getNestedCommentsRecursively(
-  comments: IComment[],
+  comments: Comment[],
   requesterId?: string,
   id?: string
 ) {
-  if (id !== undefined) {
-    for (const comment of comments) {
-      // Tìm các comment con của comment hiện tại
-      const nestedComments = await prisma.comment.findMany({
-        where: {
-          parentId: comment.id,
-          deleted: false,
-        },
-        include: {
-          children: true,
-          CommentVote: {
-            where: requesterId ? { user: { id: requesterId } } : { user: { id: "dummy-id" } },
-            select: {
-              state: true,
-              userId: false,
-              commentId: false,
-            },
-          },
-          author: {
-            select: {
-              avatarUrl: true,
-            },
+  if (id !== undefined) return;
+  for (const comment of comments) {
+    // Tìm các comment con của comment hiện tại
+    const nestedComments = await prisma.comment.findMany({
+      where: {
+        parentId: comment.id,
+        deleted: false,
+      },
+      include: {
+        children: true,
+        CommentVote: {
+          where: requesterId ? { user: { id: requesterId } } : { user: { id: "dummy-id" } },
+          select: {
+            state: true,
+            userId: false,
+            commentId: false,
           },
         },
-      });
+        author: {
+          select: {
+            avatarUrl: true,
+          },
+        },
+      },
+    });
 
-      // Nếu có các comment con, gán chúng vào thuộc tính children và tiếp tục đệ quy
-      if (nestedComments.length > 0) {
-        comment.children = nestedComments;
-        await getNestedCommentsRecursively(nestedComments);
-      }
+    // Nếu có các comment con, gán chúng vào thuộc tính children và tiếp tục đệ quy
+    if (nestedComments.length > 0) {
+      comment.children = nestedComments;
+      await getNestedCommentsRecursively(nestedComments, requesterId);
     }
   }
 }
