@@ -3,6 +3,7 @@ import userService from "../services/userService";
 import { HttpException } from "../exception/httpError";
 import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
 import communityService from "../services/communityService";
+import { reformatters } from "../utils/reformatters";
 
 const getMe = async (req: Request, res: Response) => {
   const user = req.user;
@@ -13,7 +14,8 @@ const getMe = async (req: Request, res: Response) => {
 
   const userId = user!.id;
   const queries = { userId };
-  const communities = await communityService.getCommunitiesWithQueries(queries);
+  const rawCommunities = await communityService.getAllCommunitiesJoined(queries);
+  const communities = reformatters.reformatUserCommunities(rawCommunities);
   const result = { ...user, communities };
   res.status(200).json(result);
 };

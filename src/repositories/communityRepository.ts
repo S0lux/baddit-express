@@ -89,15 +89,17 @@ const getCommunitiesWithQueries = async (queries: {
       memberCount: "desc",
     },
   });
-  const communiteiesJoined = await prisma.user_Community.findMany({
-    where: queries.userId ? { userId: queries.userId } : { userId: "dummy-id" },
-    include: { community: true },
+
+  return communities;
+};
+
+const getAllCommunitiesJoined = async (queries: { userId: string }) => {
+  return await prisma.user_Community.findMany({
+    where: { userId: queries.userId, joined: true, banned: false },
+    include: {
+      community: true,
+    },
   });
-  if (queries.userId) {
-    return communiteiesJoined;
-  } else {
-    return communities;
-  }
 };
 
 const deleteCommunity = async (communityName: string) => {
@@ -160,6 +162,7 @@ export const communityRepository = {
   getCommunitiesWithQueries,
   getUserCommunityRole,
   getUserInCommunity,
+  getAllCommunitiesJoined,
   deleteCommunity,
   updateCommunityMemberCount,
   unJoinCommunity,

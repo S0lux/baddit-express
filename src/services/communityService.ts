@@ -47,6 +47,14 @@ class communityService {
     }
   }
 
+  async getAllCommunitiesJoined(queries: { userId: string }) {
+    try {
+      return await communityRepository.getAllCommunitiesJoined(queries);
+    } catch (err) {
+      throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
+    }
+  }
+
   async deleteCommunityByName(community: Community, user: Express.User) {
     const userInCommunity = await this.getUserCommunityRole(user.id, community.id);
     const ownerId = community.ownerId;
