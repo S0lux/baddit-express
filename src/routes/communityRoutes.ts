@@ -164,18 +164,19 @@ router.get("/:communityName", communityController.getCommunity);
  * @swagger
  * /v1/communities:
  *  get:
- *   summary: Get communiteies with queries
- *   description: Get communiteies with queries
+ *   summary: Get communities with queries
+ *   description: Get communities with queries
  *   tags: [Communities]
  *   parameters:
  *    - in: query
  *      name: cursor
  *      schema:
- *        type: string
+ *        type: string | undefined
  *    - in: query
  *      name: name
  *      schema:
- *        type: string
+ *        type: string | undefined
+ *    - in: query
  *   responses:
  *    200:
  *     description: Communities retrieved successfully
@@ -230,17 +231,52 @@ router.post("/", communityValidators.create, communityController.createCommunity
  *      description: The name of the community
  *      example: programming
  *   responses:
- *    200:
+ *    201:
  *     description: User joined the community successfully
  *    401:
  *     description: User not authenticated
  *    404:
  *     description: Community not found
+ *    409:
+ *     description: User already in this community
  *    500:
  *     description: Internal server error
  *
  */
 router.post("/:communityName/members", communityController.joinCommunity);
+
+/**
+ * @swagger
+ * /v1/communities/{communityName}/members:
+ *  delete:
+ *   summary: Unjoin a community
+ *   description: Unjoin a community
+ *   tags: [Communities]
+ *   parameters:
+ *    - in: path
+ *      name: communityName
+ *      schema:
+ *       type: string
+ *       required: true
+ *       description: The name of the community
+ *       example: programming
+ *      required: true
+ *      description: The name of the community
+ *      example: programming
+ *   responses:
+ *    201:
+ *     description: Unjoined the community successfully
+ *    401:
+ *     description: User not authenticated
+ *    404:
+ *     description: Community not found
+ *    409:
+ *     description: User already out of this community
+ *    500:
+ *     description: Internal server error
+ *
+ */
+router.delete("/:communityName/members", communityController.unJoinCommunity);
 
 /**
  * @swagger

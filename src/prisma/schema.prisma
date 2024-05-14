@@ -16,6 +16,7 @@ model User {
   avatarUrl               String           @default("https://placehold.co/100x100/orange/white?text=avatar")
   status                  Status           @default(STANDARD)
   role                    UserRole         @default(USER)
+  gender                  Gender           @default(Unknown)
   registeredAt            DateTime         @default(now())
   updateAt                DateTime         @updatedAt
   communitiesOwned        Community[]
@@ -58,6 +59,8 @@ model User_Community {
   communityId   String
   communityRole CommunityRole @default(MEMBER)
   banned        Boolean       @default(false)
+  deleted       Boolean       @default(false)
+  joined        Boolean       @default(false)
   community     Community     @relation(fields: [communityId], references: [id], onDelete: Cascade)
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -143,4 +146,10 @@ enum PostType {
 enum VoteState {
   UPVOTE
   DOWNVOTE
+}
+
+enum Gender {
+  Male
+  Female
+  Unknown
 }
