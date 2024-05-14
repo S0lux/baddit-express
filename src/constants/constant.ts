@@ -66,6 +66,11 @@ export const APP_ERROR_CODE = {
     message: "User is already in this community",
   },
 
+  userAlreadyOutCommunity: {
+    code: "USER_ALREADY_Out_COMMUNITY",
+    message: "User is already out this community",
+  },
+
   missingMedia: {
     code: "MISSING_MEDIA",
     message: "Missing media in the request",

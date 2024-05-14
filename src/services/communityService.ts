@@ -32,16 +32,21 @@ class communityService {
     return community;
   }
 
+  async getUserInCommunity(userId: string, communityId: string) {
+    return await communityRepository.getUserInCommunity(userId, communityId);
+  }
+
   async getUserCommunityRole(userid: string, communityId: string) {
     return await communityRepository.getUserCommunityRole(userid, communityId);
   }
-  async getCommunitiesWithQueries(name: string, cursor?: string) {
+  async getCommunitiesWithQueries(queries: { name?: string; userId?: string; cursor?: string }) {
     try {
-      return await communityRepository.getCommunitiesWithQueries(name, cursor);
+      return await communityRepository.getCommunitiesWithQueries(queries);
     } catch (err) {
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }
   }
+
   async deleteCommunityByName(community: Community, user: Express.User) {
     const userInCommunity = await this.getUserCommunityRole(user.id, community.id);
     const ownerId = community.ownerId;
@@ -70,6 +75,21 @@ class communityService {
     } catch (err) {
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }
+  }
+
+  async joinCommunity(userId: string, communityId: string) {
+    const user = await communityRepository.getUserInCommunity(userId, communityId);
+    if (user!.joined) {
+      throw new HttpException(HttpStatusCode.CONFLICT, APP_ERROR_CODE.userAlreadyInCommunity);
+    } else {
+      await communityRepository.joinCommunity(userId, communityId);
+    }
+  }
+
+  async unJoinCommunity(userId: string, communityId: string) {
+    const user = await communityRepository.getUserInCommunity(userId, communityId);
+    if (user!.joined) await communityRepository.unJoinCommunity(userId, communityId);
+    else throw new HttpException(HttpStatusCode.CONFLICT, APP_ERROR_CODE.userAlreadyOutCommunity);
   }
   async updateCommunityLogo(community: Community, user: Express.User, logoUrl: string) {
     const userInCommunity = await this.getUserCommunityRole(user.id, community.id);

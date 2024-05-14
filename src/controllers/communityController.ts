@@ -17,18 +17,42 @@ const joinCommunity = async (req: Request, res: Response, next: NextFunction) =>
   try {
     const community = await communityService.getCommunityByName(req.params["communityName"]);
     const data = { userId: req.user!.id, communityId: community!.id };
-    await communityService.createCommunityMember(data);
+    const userMatched = await communityService.getUserInCommunity(data.userId, data.communityId);
+    if (userMatched) {
+      await communityService.joinCommunity(data.userId, data.communityId);
+    } else {
+      await communityService.createCommunityMember(data);
+    }
     //if no error has been thrown when creating member, go to this line
     await communityService.updateCommunityMemberCount(community.name, community.memberCount + 1); // this is update for joining , so just plus one, if unjoin just substract one
-    return res.status(200).json({ message: "Joined" });
+    return res.status(201).json({ message: "Joined" });
   } catch (error) {
     next(error);
   }
 };
+
+const unJoinCommunity = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const community = await communityService.getCommunityByName(req.params["communityName"]);
+    const userId = req.user!.id;
+    await communityService.unJoinCommunity(userId, community.id);
+    await communityService.updateCommunityMemberCount(community.name, community.memberCount - 1);
+    return res.status(201).json({ message: "Unjoined Community Successfully" });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const getCommunity = async (req: Request, res: Response, next: NextFunction) => {
+  var joinStatus = "";
+  const user = req?.user;
   try {
     const communityFound = await communityService.getCommunityByName(req.params["communityName"]);
-    return res.status(200).json({ community: communityFound });
+    if (user !== undefined) {
+      const userFound = await communityService.getUserInCommunity(user!.id, communityFound.id);
+      joinStatus = userFound!.joined ? "Joined" : "Not Joined";
+    }
+    return res.status(200).json({ community: communityFound, joinStatus: joinStatus });
   } catch (error) {
     next(error);
   }
@@ -36,9 +60,11 @@ const getCommunity = async (req: Request, res: Response, next: NextFunction) => 
 
 const getCommunitiesWithQueries = async (req: Request, res: Response, next: NextFunction) => {
   const cursor = req.query.cursor as string | undefined;
-  const name = req.query.name as string;
+  const name = req.query.name as string | undefined;
+  const userId = req.user?.id;
   try {
-    const communities = await communityService.getCommunitiesWithQueries(name, cursor);
+    const queries = { name, userId, cursor };
+    const communities = await communityService.getCommunitiesWithQueries(queries);
     return res.status(200).json(communities);
   } catch (err) {
     next(err);
@@ -97,4 +123,5 @@ export const communityController = {
   deleteCommunity,
   updateCommunityBanner,
   updateCommunityLogo,
+  unJoinCommunity,
 };
