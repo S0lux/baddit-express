@@ -180,7 +180,6 @@ router.get("/:communityName", communityController.getCommunity);
  *      name: userId
  *      schema:
  *        type: string | undefined
- *
  *   responses:
  *    200:
  *     description: Communities retrieved successfully

@@ -61,9 +61,13 @@ const getCommunity = async (req: Request, res: Response, next: NextFunction) => 
 const getCommunitiesWithQueries = async (req: Request, res: Response, next: NextFunction) => {
   const cursor = req.query.cursor as string | undefined;
   const name = req.query.name as string | undefined;
-  const userId = req.user?.id;
+  const userId = req.query.userId as string | undefined;
   try {
     const queries = { name, userId, cursor };
+    if (userId) {
+      if (userId !== req.user!.id)
+        throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
+    }
     const communities = await communityService.getCommunitiesWithQueries(queries);
     return res.status(200).json(communities);
   } catch (err) {
