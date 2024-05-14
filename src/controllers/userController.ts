@@ -2,15 +2,20 @@ import { NextFunction, Request, Response } from "express";
 import userService from "../services/userService";
 import { HttpException } from "../exception/httpError";
 import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
+import communityService from "../services/communityService";
 
-const getMe = (req: Request, res: Response) => {
+const getMe = async (req: Request, res: Response) => {
   const user = req.user;
 
   if (!user?.id) {
     throw new HttpException(HttpStatusCode.UNAUTHORIZED, APP_ERROR_CODE.notLoggedIn);
   }
 
-  res.status(200).json(user);
+  const userId = user!.id;
+  const queries = { userId };
+  const communities = await communityService.getCommunitiesWithQueries(queries);
+  const result = { ...user, communities };
+  res.status(200).json(result);
 };
 
 const updateAvatar = async (req: Request, res: Response, next: NextFunction) => {

@@ -164,7 +164,7 @@ router.get("/:communityName", communityController.getCommunity);
  * @swagger
  * /v1/communities:
  *  get:
- *   summary: Get communiteies with queries
+ *   summary: Get communities with queries
  *   description: Get communities with queries
  *   tags: [Communities]
  *   parameters:
@@ -177,9 +177,6 @@ router.get("/:communityName", communityController.getCommunity);
  *      schema:
  *        type: string | undefined
  *    - in: query
- *      name: userId
- *      schema:
- *        type: string | undefined
  *   responses:
  *    200:
  *     description: Communities retrieved successfully
