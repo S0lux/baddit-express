@@ -59,6 +59,8 @@ model User_Community {
   communityId   String
   communityRole CommunityRole @default(MEMBER)
   banned        Boolean       @default(false)
+  deleted       Boolean       @default(false)
+  joined        Boolean       @default(false)
   community     Community     @relation(fields: [communityId], references: [id], onDelete: Cascade)
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 

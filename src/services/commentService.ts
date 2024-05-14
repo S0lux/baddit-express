@@ -77,7 +77,6 @@ class CommentService {
         });
       }
     } catch (err) {
-      console.log(err);
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }
   }
@@ -100,7 +99,6 @@ class CommentService {
         throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.insufficientPermissions);
       }
       await commentRepository.deleteComment(commentId);
-      console.log(comment[0].authorId);
     } catch (err) {
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }

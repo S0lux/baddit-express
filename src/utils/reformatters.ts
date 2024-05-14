@@ -4,6 +4,10 @@ type Posts = Prisma.PostGetPayload<{
   include: { community: true; author: true; vote: true; _count: { select: { comments: true } } };
 }>;
 
+type UserCommunities = Prisma.User_CommunityGetPayload<{
+  include: { community: true };
+}>;
+
 function reformatPosts(posts: Posts[]) {
   const formattedPosts = posts.map((post) => ({
     id: post.id,
@@ -29,6 +33,18 @@ function reformatPosts(posts: Posts[]) {
   return formattedPosts;
 }
 
+function reformatUserCommunities(userCommunities: UserCommunities[]) {
+  const formattedUserCommunities = userCommunities.map((data) => ({
+    id: data.communityId,
+    name: data.community.name,
+    role: data.communityRole,
+    banned: data.banned,
+  }));
+
+  return formattedUserCommunities;
+}
+
 export const reformatters = {
   reformatPosts,
+  reformatUserCommunities,
 };

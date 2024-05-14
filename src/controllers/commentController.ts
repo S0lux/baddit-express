@@ -64,24 +64,23 @@ const deleteComment = async (req: Request, res: Response, next: NextFunction) =>
 const voteComment = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.user!;
-
     const { commentId, state }: z.infer<typeof voteCommentBodyValidator> = {
-      commentId: req.params["commentId"],
+      commentId: req.body.commentId,
       state: req.body.state,
     };
-
-    const comment = await commentService.getCommentsWithQueries({ commentId, requesterId: id });
+    const requesterId = id;
+    const queries = { commentId, requesterId };
+    const comment = await commentService.getCommentsWithQueries(queries);
     await commentService.overrideVoteState(id, comment[0], state);
     res.status(200).json({ message: "Vote state updated" });
   } catch (err) {
-    console.log(err);
     next(err);
   }
 };
 
 const removeVote = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.user!;
-  const commentId = req.body["commentId"];
+  const commentId = req.params["commentId"];
 
   try {
     const comment = await commentService.getCommentsWithQueries({ commentId, requesterId: id });
