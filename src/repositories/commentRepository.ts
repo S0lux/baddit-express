@@ -66,12 +66,13 @@ const getCommentsWithQueries = async (queries: {
       author: {
         select: {
           avatarUrl: true,
+          username: true,
         },
       },
     },
   });
 
-  await getNestedCommentsRecursively(rootComments, queries.requesterId, queries?.commentId);
+  await getNestedCommentsRecursively(rootComments, queries.requesterId);
   return rootComments;
 };
 
@@ -102,6 +103,7 @@ async function getNestedCommentsRecursively(
         author: {
           select: {
             avatarUrl: true,
+            username: true,
           },
         },
       },
