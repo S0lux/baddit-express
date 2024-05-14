@@ -41,8 +41,8 @@ model Community {
   name        String           @unique
   ownerId     String
   description String
-  logoUrl     String           @default("https://placehold.co/100x100/pink/white?text=logo")
-  bannerUrl   String           @default("https://placehold.co/100x100/pink/white?text=banner")
+  logoUrl     String           @default("https://placehold.co/400.png")
+  bannerUrl   String           @default("https://placehold.co/400.png")
   status      Status           @default(STANDARD)
   memberCount Int              @default(0)
   deleted     Boolean          @default(false)
