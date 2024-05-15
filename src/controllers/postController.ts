@@ -51,18 +51,20 @@ const deletePost = async (req: Request, res: Response, next: NextFunction) => {
 
 const getPostsWithQueries = async (req: Request, res: Response, next: NextFunction) => {
   const cursor = req.query.cursor as string | undefined;
-  const authorId = req.query.authorId as string | undefined;
+  const authorName = req.query.authorName as string | undefined;
   const postId = req.query.postId as string | undefined;
   const requesterId = req.user?.id;
-  const communityId = req.query.communityId as string | undefined;
+  const communityName = req.query.communityName as string | undefined;
+  const postTitle = req.query.communityName as string | undefined;
 
   try {
     const posts = await postService.getPostsWithQueries({
       requesterId,
-      authorId,
+      authorName,
       postId,
-      communityId,
+      communityName,
       cursor,
+      postTitle,
     });
 
     res.status(200).json(reformatters.reformatPosts(posts));
