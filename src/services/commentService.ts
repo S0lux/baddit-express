@@ -32,6 +32,7 @@ class CommentService {
     try {
       return await commentRepository.getCommentsWithQueries(queries);
     } catch (err) {
+      console.log(err);
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }
   }
@@ -55,28 +56,25 @@ class CommentService {
             await commentRepository.updateCommentScoreBy(comment.id, -2, tx);
           } else if (previousState === VoteState.DOWNVOTE && state === VoteState.UPVOTE) {
             await commentRepository.updateCommentScoreBy(comment.id, 2, tx);
-          } else
+          } else if (previousState === state) {
+            console.log("here");
+            await commentRepository.deleteVoteState(userId, comment.id, tx);
+            if (state === VoteState.UPVOTE) {
+              await commentRepository.updateCommentScoreBy(comment.id, -1, tx);
+            } else {
+              await commentRepository.updateCommentScoreBy(comment.id, 1, tx);
+            }
+          } else if (previousState === undefined) {
             await commentRepository.updateCommentScoreBy(
               comment.id,
               state === VoteState.UPVOTE ? 1 : -1,
               tx
             );
-        });
-      }
-
-      if (!state) {
-        const hasVoted = comment.CommentVote[0]?.state;
-        // Make sure all database operations are successful or none at all
-        await prisma.$transaction(async (tx) => {
-          await commentRepository.deleteVoteState(userId, comment.id, tx);
-          if (hasVoted === VoteState.UPVOTE) {
-            await commentRepository.updateCommentScoreBy(comment.id, -1, tx);
-          } else {
-            await commentRepository.updateCommentScoreBy(comment.id, 1, tx);
           }
         });
       }
     } catch (err) {
+      console.log(err);
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }
   }

@@ -101,26 +101,19 @@ class PostService {
             await postRepository.updatePostScoreBy(post.id, -2, tx);
           } else if (previousState === VoteState.DOWNVOTE && state === VoteState.UPVOTE) {
             await postRepository.updatePostScoreBy(post.id, 2, tx);
-          } else
+          } else if (previousState === state) {
+            await postRepository.deleteVoteState(userId, post.id, tx);
+            if (state === VoteState.UPVOTE) {
+              await postRepository.updatePostScoreBy(post.id, -1, tx);
+            } else {
+              await postRepository.updatePostScoreBy(post.id, 1, tx);
+            }
+          } else if (previousState === undefined)
             await postRepository.updatePostScoreBy(
               post.id,
               state === VoteState.UPVOTE ? 1 : -1,
               tx
             );
-        });
-      }
-
-      // If no state is provided, delete the vote state
-      if (!state) {
-        const hasVoted = post.vote[0]?.state;
-        // Make sure all database operations are successful or none at all
-        await prisma.$transaction(async (tx) => {
-          await postRepository.deleteVoteState(userId, post.id, tx);
-          if (hasVoted === VoteState.UPVOTE) {
-            await postRepository.updatePostScoreBy(post.id, -1, tx);
-          } else {
-            await postRepository.updatePostScoreBy(post.id, 1, tx);
-          }
         });
       }
     } catch (err) {

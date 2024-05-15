@@ -12,6 +12,7 @@ const router = express.Router();
  *  description: User related routes
  */
 
+router.use(ensureAuthenticated);
 /**
  * @swagger
  * /v1/users/me:
@@ -33,8 +34,6 @@ const router = express.Router();
  *
  */
 router.get("/me", userController.getMe);
-
-router.use(ensureAuthenticated);
 
 /**
  * @swagger
@@ -65,5 +64,26 @@ router.use(ensureAuthenticated);
  *     description: Internal server error
  */
 router.post("/avatar", avatarParser.single("avatar"), userController.updateAvatar);
+
+/**
+ * @swagger
+ * /v1/users/{username}:
+ *  get:
+ *   summary: Get other user profile
+ *   description: Get other user profile
+ *   tags: [Users]
+ *
+ *   responses:
+ *    200:
+ *     description: Avatar updated successfully
+ *    401:
+ *     description: User is not logged in
+ *    404:
+ *     description: User not found
+ *    500:
+ *     description: Internal server error
+ */
+
+router.get("/:username", userController.getOther);
 
 export default router;

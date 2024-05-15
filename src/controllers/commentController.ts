@@ -71,21 +71,9 @@ const voteComment = async (req: Request, res: Response, next: NextFunction) => {
     const requesterId = id;
     const queries = { commentId, requesterId };
     const comment = await commentService.getCommentsWithQueries(queries);
+    console.log(comment);
     await commentService.overrideVoteState(id, comment[0], state);
     res.status(200).json({ message: "Vote state updated" });
-  } catch (err) {
-    next(err);
-  }
-};
-
-const removeVote = async (req: Request, res: Response, next: NextFunction) => {
-  const { id } = req.user!;
-  const commentId = req.params["commentId"];
-
-  try {
-    const comment = await commentService.getCommentsWithQueries({ commentId, requesterId: id });
-    await commentService.overrideVoteState(id, comment[0]);
-    res.status(200).json({ message: "Vote state removed" });
   } catch (err) {
     next(err);
   }
@@ -110,6 +98,5 @@ export const commentController = {
   getCommentsWithQueries,
   deleteComment,
   voteComment,
-  removeVote,
   editTextPostContent,
 };

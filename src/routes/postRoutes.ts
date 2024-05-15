@@ -193,6 +193,8 @@ router.put("/:postId", postController.editTextPostContent);
  *      schema:
  *       type: object
  *       properties:
+ *        postId:
+ *         type:string
  *        state:
  *         type: string
  *         enum: [UPVOTE, DOWNVOTE]
@@ -210,37 +212,6 @@ router.put("/:postId", postController.editTextPostContent);
  *     description: Post not found
  *
  */
-router.post("/:postId/votes", postValidators.vote, postController.votePost);
-
-/**
- * @swagger
- * /v1/posts/{postId}/votes:
- *  delete:
- *   summary: Remove vote from a post
- *   description: Remove vote from a post in a community
- *   tags: [Posts]
- *   parameters:
- *    - in: path
- *      name: postId
- *      schema:
- *       type: string
- *       required: true
- *       description: The id of the post
- *       example: 123456
- *      required: true
- *      description: The id of the post
- *      example: 123456
- *   responses:
- *    200:
- *     description: Vote removed
- *    401:
- *     description: User not authenticated
- *    404:
- *     description: Post not found
- *    500:
- *     description: Internal server error
- *
- */
-router.delete("/:postId/votes", postController.removeVote);
+router.post("/votes", postValidators.vote, postController.votePost);
 
 export default router;
