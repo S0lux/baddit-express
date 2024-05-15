@@ -75,7 +75,7 @@ router.post("/avatar", avatarParser.single("avatar"), userController.updateAvata
  *
  *   responses:
  *    200:
- *     description: Avatar updated successfully
+ *     description: Profile retrieved successfully
  *    401:
  *     description: User is not logged in
  *    404:
@@ -85,5 +85,46 @@ router.post("/avatar", avatarParser.single("avatar"), userController.updateAvata
  */
 
 router.get("/:username", userController.getOther);
+
+/**
+ * @swagger
+ * /v1/users/{username}/posts:
+ *  get:
+ *   summary: Get other user posts
+ *   description: Get other user posts
+ *   tags: [Users]
+ *
+ *   responses:
+ *    200:
+ *     description: Posts retrieved successfully
+ *    401:
+ *     description: User is not logged in
+ *    404:
+ *     description: User not found
+ *    500:
+ *     description: Internal server error
+ */
+router.get("/:username/posts", userController.getOtherPosts);
+
+/**
+ * @swagger
+ * /v1/users/{username}/comments:
+ *  get:
+ *   summary: Get other user comments
+ *   description: Get other user comments
+ *   tags: [Users]
+ *
+ *   responses:
+ *    200:
+ *     description: Comments retrieved successfully
+ *    401:
+ *     description: User is not logged in
+ *    404:
+ *     description: User not found
+ *    500:
+ *     description: Internal server error
+ */
+
+router.get("/:username/comments", userController.getOtherComments);
 
 export default router;

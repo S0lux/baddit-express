@@ -5,6 +5,8 @@ import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
 import communityService from "../services/communityService";
 import { reformatters } from "../utils/reformatters";
 import { Prisma } from "@prisma/client";
+import postService from "../services/postService";
+import commentService from "../services/commentService";
 
 const getMe = async (req: Request, res: Response, next: NextFunction) => {
   const user = req.user;
@@ -31,6 +33,31 @@ const getOther = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const getOtherPosts = async (req: Request, res: Response, next: NextFunction) => {
+  const username = req.params.username;
+  try {
+    const user = await userService.getUserByUserName(username);
+    const authorId = user.id;
+    const queries = { authorId };
+    const posts = await postService.getPostsWithQueries(queries);
+    res.status(200).json(reformatters.reformatPosts(posts));
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getOtherComments = async (req: Request, res: Response, next: NextFunction) => {
+  const username = req.params.username;
+  try {
+    const user = await userService.getUserByUserName(username);
+    const authorId = user.id;
+    const queries = { authorId };
+    const comments = await commentService.getCommentsWithQueries(queries);
+    res.status(200).json(comments);
+  } catch (err) {
+    next(err);
+  }
+};
 const updateAvatar = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.file) {
@@ -48,5 +75,7 @@ const updateAvatar = async (req: Request, res: Response, next: NextFunction) => 
 export const userController = {
   getMe,
   getOther,
+  getOtherComments,
+  getOtherPosts,
   updateAvatar,
 };
