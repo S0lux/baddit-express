@@ -51,7 +51,7 @@ const deletePost = async (req: Request, res: Response, next: NextFunction) => {
 
 const getPostsWithQueries = async (req: Request, res: Response, next: NextFunction) => {
   const cursor = req.query.cursor as string | undefined;
-  const authorName = req.query.authorName as string | undefined;
+  const authorId = req.query.authorId as string | undefined;
   const postId = req.query.postId as string | undefined;
   const requesterId = req.user?.id;
   const communityName = req.query.communityName as string | undefined;
@@ -60,7 +60,7 @@ const getPostsWithQueries = async (req: Request, res: Response, next: NextFuncti
   try {
     const posts = await postService.getPostsWithQueries({
       requesterId,
-      authorName,
+      authorId,
       postId,
       communityName,
       cursor,

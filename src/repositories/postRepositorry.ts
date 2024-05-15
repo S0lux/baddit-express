@@ -16,7 +16,7 @@ const createPost = async (data: {
 
 const getPostsWithQueries = async (queries: {
   requesterId?: string;
-  authorName?: string;
+  authorId?: string;
   postId?: string;
   communityName?: string;
   cursor?: string;
