@@ -42,7 +42,7 @@ const getCommentsWithQueries = async (queries: {
   const rootComments = await prisma.comment.findMany({
     where: {
       id: queries.commentId,
-      parentId: queries.commentId ? undefined : null,
+      parentId: queries.commentId || queries.authorId ? undefined : null,
       deleted: false,
       postId: queries.postId,
       authorId: queries.authorId,
@@ -52,7 +52,7 @@ const getCommentsWithQueries = async (queries: {
     cursor: queries.cursor ? { id: queries.cursor } : undefined,
     orderBy: { createdAt: "desc" },
     include: {
-      children: true,
+      children: queries.commentId || queries.authorId ? false : true,
       CommentVote: {
         where: queries.requesterId
           ? { user: { id: queries.requesterId } }
@@ -71,18 +71,13 @@ const getCommentsWithQueries = async (queries: {
       },
     },
   });
-
-  await getNestedCommentsRecursively(rootComments, queries.requesterId);
+  if (queries.authorId !== undefined && queries.commentId !== undefined)
+    await getNestedCommentsRecursively(rootComments, queries.requesterId);
   return rootComments;
 };
 
 //Add-on function
-async function getNestedCommentsRecursively(
-  comments: Comment[],
-  requesterId?: string,
-  id?: string
-) {
-  if (id !== undefined) return;
+async function getNestedCommentsRecursively(comments: Comment[], requesterId?: string) {
   for (const comment of comments) {
     // Tìm các comment con của comment hiện tại
     const nestedComments = await prisma.comment.findMany({
