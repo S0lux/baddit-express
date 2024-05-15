@@ -71,13 +71,16 @@ const getCommentsWithQueries = async (queries: {
       },
     },
   });
-  if (queries.authorId !== undefined && queries.commentId !== undefined)
+  console.log(queries);
+  if (queries.authorId === undefined && queries.commentId === undefined) {
     await getNestedCommentsRecursively(rootComments, queries.requesterId);
+  }
   return rootComments;
 };
 
 //Add-on function
 async function getNestedCommentsRecursively(comments: Comment[], requesterId?: string) {
+  console.log("here");
   for (const comment of comments) {
     // Tìm các comment con của comment hiện tại
     const nestedComments = await prisma.comment.findMany({

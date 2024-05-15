@@ -125,7 +125,7 @@ class communityService {
       user.role === UserRole.ADMIN
     ) {
       try {
-        await communityRepository.updateLogo(community.name, bannerUrl);
+        await communityRepository.updateBanner(community.name, bannerUrl);
       } catch (err) {
         throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
       }
