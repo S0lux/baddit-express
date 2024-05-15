@@ -14,6 +14,28 @@ const router = express.Router();
 
 /**
  * @swagger
+ * /v1/users/me:
+ *  get:
+ *   summary: Get logged in user information
+ *   description: Get information of the user who is currently logged in
+ *   tags: [Users]
+ *   responses:
+ *    200:
+ *     description: User information
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/User'
+ *    401:
+ *     description: User is not logged in
+ *    500:
+ *     description: Internal server error
+ *
+ */
+router.get("/me", userController.getMe);
+
+/**
+ * @swagger
  * /v1/users/{username}:
  *  get:
  *   summary: Get other user profile
@@ -75,28 +97,6 @@ router.get("/:username/posts", userController.getOtherPosts);
 router.get("/:username/comments", userController.getOtherComments);
 
 router.use(ensureAuthenticated);
-/**
- * @swagger
- * /v1/users/me:
- *  get:
- *   summary: Get logged in user information
- *   description: Get information of the user who is currently logged in
- *   tags: [Users]
- *   responses:
- *    200:
- *     description: User information
- *     content:
- *      application/json:
- *       schema:
- *        $ref: '#/components/schemas/User'
- *    401:
- *     description: User is not logged in
- *    500:
- *     description: Internal server error
- *
- */
-router.get("/me", userController.getMe);
-
 /**
  * @swagger
  * /v1/users/avatar:
