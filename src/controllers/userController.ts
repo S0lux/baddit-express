@@ -9,12 +9,12 @@ import postService from "../services/postService";
 import commentService from "../services/commentService";
 
 const getMe = async (req: Request, res: Response, next: NextFunction) => {
-  if (!req.user?.id) {
-    throw new HttpException(HttpStatusCode.UNAUTHORIZED, APP_ERROR_CODE.notLoggedIn);
-  }
-
-  const user = req.user;
   try {
+    if (!req.user?.id) {
+      throw new HttpException(HttpStatusCode.UNAUTHORIZED, APP_ERROR_CODE.notLoggedIn);
+    }
+
+    const user = req.user;
     const userId = user!.id;
     const queries = { userId };
     const rawCommunities = await communityService.getAllCommunitiesJoined(queries);
