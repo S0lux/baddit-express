@@ -26,7 +26,7 @@ const router = express.Router();
  *      schema:
  *        type: string
  *    - in: query
- *      name: authorId
+ *      name: authorName
  *      schema:
  *        type: string
  *    - in: query
@@ -34,7 +34,11 @@ const router = express.Router();
  *      schema:
  *        type: string
  *    - in: query
- *      name: communityId
+ *      name: communityName
+ *      schema:
+ *        type: string
+ *    - in: query
+ *      name: postTitle
  *      schema:
  *        type: string
  *   responses:
