@@ -26,7 +26,7 @@ class CommentService {
     postId?: string;
     commentId?: string;
     requesterId?: string;
-    authorId?: string;
+    authorName?: string;
     cursor?: string;
   }) {
     try {

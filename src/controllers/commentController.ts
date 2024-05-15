@@ -25,7 +25,7 @@ const createComment = async (req: Request, res: Response, next: NextFunction) =>
 const getCommentsWithQueries = async (req: Request, res: Response, next: NextFunction) => {
   const postId = req.query.postId as string | undefined;
   const commentId = req.query.commentId as string | undefined;
-  const authorId = req.query.authorId as string | undefined;
+  const authorName = req.query.authorName as string | undefined;
   const requesterId = req.user?.id;
   const cursor = req.query.cursor as string | undefined;
   try {
@@ -33,7 +33,7 @@ const getCommentsWithQueries = async (req: Request, res: Response, next: NextFun
       postId,
       commentId,
       requesterId,
-      authorId,
+      authorName,
       cursor,
     });
     res.status(200).json(comments);
