@@ -16,7 +16,7 @@ const createPost = async (data: {
 
 const getPostsWithQueries = async (queries: {
   requesterId?: string;
-  authorId?: string;
+  authorName?: string;
   postId?: string;
   communityName?: string;
   cursor?: string;
@@ -24,7 +24,7 @@ const getPostsWithQueries = async (queries: {
 }) => {
   return await prisma.post.findMany({
     where: {
-      authorId: queries.authorId,
+      author: { username: queries.authorName },
       id: queries.postId,
       community: { name: queries.communityName },
       title: queries.postTitle,

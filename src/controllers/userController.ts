@@ -36,9 +36,8 @@ const getOther = async (req: Request, res: Response, next: NextFunction) => {
 const getOtherPosts = async (req: Request, res: Response, next: NextFunction) => {
   const username = req.params.username;
   try {
-    const user = await userService.getUserByUserName(username);
-    const authorId = user.id;
-    const queries = { authorId };
+    const authorName = username;
+    const queries = { authorName };
     const posts = await postService.getPostsWithQueries(queries);
     res.status(200).json(reformatters.reformatPosts(posts));
   } catch (err) {
@@ -49,9 +48,8 @@ const getOtherPosts = async (req: Request, res: Response, next: NextFunction) =>
 const getOtherComments = async (req: Request, res: Response, next: NextFunction) => {
   const username = req.params.username;
   try {
-    const user = await userService.getUserByUserName(username);
-    const authorId = user.id;
-    const queries = { authorId };
+    const authorName = username;
+    const queries = { authorName };
     const comments = await commentService.getCommentsWithQueries(queries);
     res.status(200).json(comments);
   } catch (err) {

@@ -67,7 +67,7 @@ class PostService {
 
   async getPostsWithQueries(queries: {
     requesterId?: string;
-    authorId?: string;
+    authorName?: string;
     postId?: string;
     communityName?: string;
     cursor?: string;
