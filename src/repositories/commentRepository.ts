@@ -47,7 +47,7 @@ const getCommentsWithQueries = async (queries: {
       postId: queries.postId,
       authorId: queries.authorId,
     },
-    take: 15,
+    take: 10,
     skip: queries.cursor ? 1 : 0,
     cursor: queries.cursor ? { id: queries.cursor } : undefined,
     orderBy: { createdAt: "desc" },

@@ -3,6 +3,7 @@ import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
 import { HttpException } from "../exception/httpError";
 import { userRepository } from "../repositories/userRepository";
 import { generateHash } from "../utils/hashFunctions";
+import { User } from "@prisma/client";
 
 class userService {
   async updateUserAvatar(id: string, avatarUrl: string) {
@@ -18,6 +19,17 @@ class userService {
       return await userRepository.getUserById(id);
     } catch {
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
+    }
+  }
+
+  async getUserByUserName(username: string) {
+    try {
+      const userFound = await userRepository.getUserByUsername(username);
+      if (userFound === null)
+        throw new HttpException(HttpStatusCode.NOT_FOUND, APP_ERROR_CODE.userNotFound);
+      else return userFound;
+    } catch {
+      throw new HttpException(HttpStatusCode.NOT_FOUND, APP_ERROR_CODE.userNotFound);
     }
   }
 
