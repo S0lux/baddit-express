@@ -44,7 +44,7 @@ const unJoinCommunity = async (req: Request, res: Response, next: NextFunction) 
 };
 
 const getCommunity = async (req: Request, res: Response, next: NextFunction) => {
-  var joinStatus = "";
+  var joinStatus = "You need to be logged in";
   const userId = req.user?.id;
   try {
     const communityFound = await communityService.getCommunityByName(req.params["communityName"]);
@@ -52,6 +52,7 @@ const getCommunity = async (req: Request, res: Response, next: NextFunction) => 
       const userFound = await communityService.getUserInCommunity(userId, communityFound.id);
       if (userFound) {
         if (userFound.joined) joinStatus = "Joined";
+        else joinStatus = "Not Joined"; 
       } else joinStatus = "Not Joined";
     }
     return res.status(200).json({ community: communityFound, joinStatus: joinStatus });
