@@ -55,7 +55,7 @@ const getPostsWithQueries = async (req: Request, res: Response, next: NextFuncti
   const postId = req.query.postId as string | undefined;
   const requesterId = req.user?.id;
   const communityName = req.query.communityName as string | undefined;
-  const postTitle = req.query.communityName as string | undefined;
+  const postTitle = req.query.postTitle as string | undefined;
 
   try {
     const posts = await postService.getPostsWithQueries({
