@@ -13,7 +13,7 @@ model User {
   hashedPassword          String
   email                   String           @unique
   emailVerified           Boolean          @default(false)
-  avatarUrl               String           @default("https://placehold.co/100x100/orange/white?text=avatar")
+  avatarUrl               String           @default("https://placehold.co/400.png")
   status                  Status           @default(STANDARD)
   role                    UserRole         @default(USER)
   gender                  Gender           @default(Unknown)
