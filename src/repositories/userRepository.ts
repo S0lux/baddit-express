@@ -64,6 +64,7 @@ export const userRepository = {
   createUser,
   getUserByUsername,
   getUserById,
+  getUserByEmail,
   updateAvatar,
   deleteEmailToken,
   addEmailToken,
