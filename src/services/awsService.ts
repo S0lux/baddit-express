@@ -15,7 +15,7 @@ class emailService {
     }
 
     const token = randomstring.generate();
-    const expireAt = new Date().setMinutes(new Date().getMinutes() + 5);
+    const expireAt = new Date().setMinutes(new Date().getMinutes() + 1440); // a day
 
     try {
       const emailToken = await userRepository.addEmailToken(userId, token, new Date(expireAt));
