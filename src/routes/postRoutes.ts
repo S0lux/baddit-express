@@ -197,7 +197,7 @@ router.put("/:postId", postController.editTextPostContent);
  *      schema:
  *       type: object
  *       properties:
- *        voteState:
+ *        state:
  *         type: string
  *         description: New votestate of the post
  *         example: UPVOTE
