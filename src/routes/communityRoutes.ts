@@ -2,7 +2,7 @@ import express from "express";
 import { communityController } from "../controllers/communityController";
 import { communityValidators } from "../validators/communityValidators";
 import { bannerParser, logoParser } from "../middlewares/multerParsers";
-import ensureEmailVerified from "../middlewares/ensureEmailVerified";
+import ensureAuthenticated from "../middlewares/ensureAuthenticated";
 
 const router = express.Router();
 
@@ -185,7 +185,7 @@ router.get("/:communityName", communityController.getCommunity);
  */
 router.get("/", communityController.getCommunitiesWithQueries);
 
-router.use(ensureEmailVerified);
+router.use(ensureAuthenticated);
 
 /**
  * @swagger

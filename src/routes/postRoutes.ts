@@ -2,7 +2,7 @@ import express from "express";
 import { postController } from "../controllers/postController";
 import { postMediaParser } from "../middlewares/multerParsers";
 import { postValidators } from "../validators/postValidators";
-import ensureEmailVerified from "../middlewares/ensureEmailVerified";
+import ensureAuthenticated from "../middlewares/ensureAuthenticated";
 
 const router = express.Router();
 
@@ -49,7 +49,7 @@ const router = express.Router();
  */
 router.get("/", postController.getPostsWithQueries);
 
-router.use(ensureEmailVerified);
+router.use(ensureAuthenticated);
 
 /**
  * @swagger
