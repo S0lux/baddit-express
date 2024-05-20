@@ -197,14 +197,10 @@ router.put("/:postId", postController.editTextPostContent);
  *      schema:
  *       type: object
  *       properties:
- *        postId:
- *         type:string
- *        state:
+ *        voteState:
  *         type: string
- *         enum: [UPVOTE, DOWNVOTE]
- *         description: Vote state
+ *         description: New votestate of the post
  *         example: UPVOTE
- *         required: true
  *   responses:
  *    200:
  *     description: Vote state updated
@@ -216,6 +212,6 @@ router.put("/:postId", postController.editTextPostContent);
  *     description: Post not found
  *
  */
-router.post("/votes", postValidators.vote, postController.votePost);
+router.post("/:postId/votes", postValidators.vote, postController.votePost);
 
 export default router;
