@@ -15,8 +15,27 @@ const createCommunityModerator = async (
   communityId: string,
   communityRole: CommunityRole = CommunityRole.MODERATOR
 ) => {
-  const data = { userId: userId, communityId: communityId, communityRole: communityRole };
+  const data = {
+    userId: userId,
+    communityId: communityId,
+    communityRole: communityRole,
+    joined: true,
+  };
   return await prisma.user_Community.create({ data }).catch((err) => null);
+};
+
+const createCommunityAdmin = async (
+  userId: string,
+  communityId: string,
+  communityRole: CommunityRole = CommunityRole.ADMIN
+) => {
+  const data = {
+    userId: userId,
+    communityId: communityId,
+    communityRole: communityRole,
+    joined: true,
+  };
+  return await prisma.user_Community.create({ data }).catch((err) => console.log(err));
 };
 
 const createCommunityMember = async (data: { communityId: string; userId: string }) => {
@@ -158,6 +177,7 @@ export const communityRepository = {
   createCommunity,
   createCommunityModerator,
   createCommunityMember,
+  createCommunityAdmin,
   getCommunityByName,
   getCommunitiesWithQueries,
   getUserCommunityRole,

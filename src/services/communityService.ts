@@ -25,6 +25,13 @@ class communityService {
     }
   }
 
+  async createCommunityAdmin(userId: string, communityId: string) {
+    const newAdmin = await communityRepository.createCommunityAdmin(userId, communityId);
+    if (!newAdmin)
+      throw new HttpException(HttpStatusCode.CONFLICT, APP_ERROR_CODE.userIsAlreadyAdmin);
+    return newAdmin;
+  }
+
   async getCommunityByName(communityName: string) {
     const community = await communityRepository.getCommunityByName(communityName);
     if (!community)
