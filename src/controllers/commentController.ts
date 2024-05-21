@@ -50,8 +50,12 @@ const deleteComment = async (req: Request, res: Response, next: NextFunction) =>
     const comment = await commentService.getCommentsWithQueries({ commentId });
     const postId = comment[0].postId as string | undefined;
     const post = await postRepository.getPostsWithQueries({ postId });
-    const community = await communityService.getCommunityByName(post[0].communityName);
-    const userCommunityRole = await communityService.getUserCommunityRole(user.id, community.id);
+    var community = undefined;
+    var userCommunityRole = null;
+    if (post[0].communityName) {
+      community = await communityService.getCommunityByName(post[0].communityName);
+      userCommunityRole = await communityService.getUserCommunityRole(user.id, community.id);
+    }
 
     await commentService.deleteComment(commentId, comment, user, userCommunityRole);
 

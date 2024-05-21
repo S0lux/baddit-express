@@ -8,20 +8,22 @@ import { reformatters } from "../utils/reformatters";
 
 const createPost = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.user!.id;
-  const { title, content, type, communityName }: z.infer<typeof postBodyValidator> = req.body;
-
+  const { title, content, type }: z.infer<typeof postBodyValidator> = req.body;
   try {
+    const communityName = req.body["communityName"] as string | undefined;
     // Validate community name
     // If not found, communityService throws error
-    const community = await communityService.getCommunityByName(communityName);
+    var community = undefined;
+    if (communityName !== undefined)
+      community = await communityService.getCommunityByName(communityName);
 
     // Create post
     await postService.createPost(
       title,
       content,
       type,
-      community,
       userId,
+      community,
       req.files as Express.Multer.File[]
     );
 
@@ -37,9 +39,12 @@ const deletePost = async (req: Request, res: Response, next: NextFunction) => {
 
   try {
     const post = await postService.getPostsWithQueries({ postId });
-    const community = await communityService.getCommunityByName(post[0].communityName);
-    const userCommunityRole = await communityService.getUserCommunityRole(user.id, community.id);
-
+    var community = undefined,
+      userCommunityRole = null;
+    if (post[0].communityName) {
+      community = await communityService.getCommunityByName(post[0].communityName);
+      userCommunityRole = await communityService.getUserCommunityRole(user.id, community.id);
+    }
     // Delete post
     await postService.deletePost(postId, post, user, userCommunityRole);
 

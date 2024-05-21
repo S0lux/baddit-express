@@ -26,7 +26,7 @@ function reformatPosts(posts: Posts[]) {
     },
     community: {
       name: post.communityName,
-      logoUrl: post.community.logoUrl,
+      logoUrl: post.community?.logoUrl,
     },
     createdAt: post.createdAt,
     updatedAt: post.updatedAt,

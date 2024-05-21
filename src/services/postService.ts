@@ -19,8 +19,8 @@ class PostService {
     title: string,
     content: string,
     type: PostType,
-    community: Community,
     userId: string,
+    community?: Community,
     mediaArray?: Express.Multer.File[]
   ) {
     // Build post data
@@ -32,7 +32,7 @@ class PostService {
         content,
         type,
         authorId: userId,
-        communityName: community.name,
+        communityName: community?.name,
       };
     } else {
       // Validate media files
@@ -48,7 +48,7 @@ class PostService {
         content: "",
         type,
         authorId: userId,
-        communityName: community.name,
+        communityName: community?.name,
         mediaUrls: mediaUrls,
       };
     }
