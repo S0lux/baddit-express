@@ -20,7 +20,7 @@ class authService {
       throw new HttpException(HttpStatusCode.CONFLICT, APP_ERROR_CODE.usernameTaken);
     }
 
-    const emailUser = await userRepository.getUserByUsername(data.email);
+    const emailUser = await userRepository.getUserByEmail(data.email);
     if (emailUser) {
       throw new HttpException(HttpStatusCode.CONFLICT, APP_ERROR_CODE.emailTaken);
     }

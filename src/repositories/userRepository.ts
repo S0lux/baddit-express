@@ -14,6 +14,13 @@ const getUserByEmail = async (email: string) => {
   return await prisma.user.findUnique({ where: { email } });
 };
 
+const getUserByToken = async (token: string) => {
+  return prisma.emailToken.findFirst({
+    where: { token },
+    include: { User: true },
+  });
+};
+
 const getUserById = async (id: string) => {
   return await prisma.user.findUnique({
     where: { id },
@@ -64,6 +71,8 @@ export const userRepository = {
   createUser,
   getUserByUsername,
   getUserById,
+  getUserByEmail,
+  getUserByToken,
   updateAvatar,
   deleteEmailToken,
   addEmailToken,

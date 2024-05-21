@@ -50,18 +50,13 @@ const logoutUser = async (req: Request, res: Response, next: NextFunction) => {
 
 const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = req.user?.id;
     const tokenToCheck = req.body["token"];
 
     if (!tokenToCheck) {
       throw new HttpException(HttpStatusCode.BAD_REQUEST, APP_ERROR_CODE.unexpectedBody);
     }
 
-    if (!userId) {
-      throw new HttpException(HttpStatusCode.UNAUTHORIZED, APP_ERROR_CODE.notLoggedIn);
-    }
-
-    await awsService.verifyEmailToken(tokenToCheck, userId);
+    await awsService.verifyEmailToken(tokenToCheck);
 
     return res.status(200).json({ message: "Email Verified" });
   } catch (error) {

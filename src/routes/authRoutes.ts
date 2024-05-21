@@ -106,6 +106,8 @@ const authenticateOptions: AuthenticateOptions = {
  *     description: User logged in successfully
  *    401:
  *     description: Invalid credentials
+ *    403:
+ *     description: User not verified
  *    500:
  *     description: Internal server error
  */

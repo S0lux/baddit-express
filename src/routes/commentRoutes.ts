@@ -1,7 +1,7 @@
 import express from "express";
 import { commentController } from "../controllers/commentController";
-import ensureEmailVerified from "../middlewares/ensureEmailVerified";
 import { commentValidator } from "../validators/commentValidators";
+import ensureAuthenticated from "../middlewares/ensureAuthenticated";
 
 const router = express.Router();
 
@@ -44,7 +44,7 @@ const router = express.Router();
  */
 router.get("/", commentController.getCommentsWithQueries);
 
-router.use(ensureEmailVerified);
+router.use(ensureAuthenticated);
 
 /**
  * @swagger

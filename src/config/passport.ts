@@ -2,6 +2,8 @@ import passportLocal from "passport-local";
 import { userRepository } from "../repositories/userRepository";
 import { compareHash } from "../utils/hashFunctions";
 import passport from "passport";
+import { HttpException } from "../exception/httpError";
+import { APP_ERROR_CODE } from "../constants/constant";
 
 const LocalStrategy = passportLocal.Strategy;
 
@@ -12,8 +14,13 @@ const strategy = new LocalStrategy(function verify(username, password, done) {
       if (!user) {
         return done(null, false);
       }
+
       if (compareHash(password, user.hashedPassword) === false) {
         return done(null, false);
+      }
+
+      if (!user.emailVerified) {
+        return done(new HttpException(403, APP_ERROR_CODE.emailNotVerified), false);
       }
       const newUser = {
         id: user?.id,

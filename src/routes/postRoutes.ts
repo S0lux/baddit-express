@@ -2,7 +2,7 @@ import express from "express";
 import { postController } from "../controllers/postController";
 import { postMediaParser } from "../middlewares/multerParsers";
 import { postValidators } from "../validators/postValidators";
-import ensureEmailVerified from "../middlewares/ensureEmailVerified";
+import ensureAuthenticated from "../middlewares/ensureAuthenticated";
 
 const router = express.Router();
 
@@ -49,7 +49,7 @@ const router = express.Router();
  */
 router.get("/", postController.getPostsWithQueries);
 
-router.use(ensureEmailVerified);
+router.use(ensureAuthenticated);
 
 /**
  * @swagger
@@ -197,14 +197,10 @@ router.put("/:postId", postController.editTextPostContent);
  *      schema:
  *       type: object
  *       properties:
- *        postId:
- *         type:string
  *        state:
  *         type: string
- *         enum: [UPVOTE, DOWNVOTE]
- *         description: Vote state
+ *         description: New votestate of the post
  *         example: UPVOTE
- *         required: true
  *   responses:
  *    200:
  *     description: Vote state updated
@@ -216,6 +212,6 @@ router.put("/:postId", postController.editTextPostContent);
  *     description: Post not found
  *
  */
-router.post("/votes", postValidators.vote, postController.votePost);
+router.post("/:postId/votes", postValidators.vote, postController.votePost);
 
 export default router;

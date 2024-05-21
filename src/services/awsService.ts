@@ -15,7 +15,7 @@ class emailService {
     }
 
     const token = randomstring.generate();
-    const expireAt = new Date().setMinutes(new Date().getMinutes() + 5);
+    const expireAt = new Date().setMinutes(new Date().getMinutes() + 1440); // a day
 
     try {
       const emailToken = await userRepository.addEmailToken(userId, token, new Date(expireAt));
@@ -47,13 +47,12 @@ class emailService {
     }
   }
 
-  async verifyEmailToken(token: string, userId: string) {
-    const tokenArray = await userRepository.getEmailTokens(userId);
-    const matchedToken = tokenArray.find((element) => element.token === token);
+  async verifyEmailToken(token: string) {
+    const foundToken = await userRepository.getUserByToken(token);
 
-    if (matchedToken) {
-      if (matchedToken.expireAt.getTime() >= Date.now()) {
-        await userRepository.updateEmailVerified(userId);
+    if (foundToken) {
+      if (foundToken.expireAt.getTime() >= Date.now()) {
+        await userRepository.updateEmailVerified(foundToken.userId);
         await userRepository.deleteEmailToken(token);
       } else {
         await userRepository.deleteEmailToken(token);
@@ -61,7 +60,7 @@ class emailService {
       }
     }
 
-    if (!matchedToken)
+    if (!foundToken)
       throw new HttpException(HttpStatusCode.INVALID_TOKEN, APP_ERROR_CODE.tokenInvalid);
   }
 }
