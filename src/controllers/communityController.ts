@@ -52,7 +52,7 @@ const getCommunity = async (req: Request, res: Response, next: NextFunction) => 
       const userFound = await communityService.getUserInCommunity(userId, communityFound.id);
       if (userFound) {
         if (userFound.joined) joinStatus = "Joined";
-        else joinStatus = "Not Joined"; 
+        else joinStatus = "Not Joined";
       } else joinStatus = "Not Joined";
     }
     return res.status(200).json({ community: communityFound, joinStatus: joinStatus });

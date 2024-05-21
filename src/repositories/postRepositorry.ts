@@ -8,7 +8,7 @@ const createPost = async (data: {
   title: string;
   content: string;
   authorId: string;
-  communityName: string;
+  communityName?: string;
   mediaUrls?: string[];
 }) => {
   return await prisma.post.create({ data });

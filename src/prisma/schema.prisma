@@ -75,8 +75,8 @@ model Post {
   mediaUrls     String[]
   author        User       @relation(fields: [authorId], references: [id])
   authorId      String
-  community     Community  @relation(fields: [communityName], references: [name])
-  communityName String
+  community     Community? @relation(fields: [communityName], references: [name])
+  communityName String?
   deleted       Boolean    @default(false)
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
