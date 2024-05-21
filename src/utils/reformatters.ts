@@ -50,9 +50,8 @@ function reformatUsers(user: Users) {
   const formattedUsers = {
     id: user.id,
     username: user.username,
-    gender: user.gender,
     avatarUrl: user.avatarUrl,
-    createdAt: user.registeredAt,
+    registeredAt: user.registeredAt,
   };
   return formattedUsers;
 }
