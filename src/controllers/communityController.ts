@@ -7,7 +7,9 @@ import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
 const createCommunity = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = { ...req.body, ownerId: req.user!.id };
-    await communityService.createCommunity(data);
+    const community = await communityService.createCommunity(data);
+    const admin = await communityService.createCommunityAdmin(req.user!.id, community.id);
+    console.log(admin);
     return res.status(201).json({ message: "Community created" });
   } catch (error) {
     next(error);
@@ -52,7 +54,7 @@ const getCommunity = async (req: Request, res: Response, next: NextFunction) => 
       const userFound = await communityService.getUserInCommunity(userId, communityFound.id);
       if (userFound) {
         if (userFound.joined) joinStatus = "Joined";
-        else joinStatus = "Not Joined"; 
+        else joinStatus = "Not Joined";
       } else joinStatus = "Not Joined";
     }
     return res.status(200).json({ community: communityFound, joinStatus: joinStatus });

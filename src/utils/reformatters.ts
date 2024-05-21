@@ -27,7 +27,7 @@ function reformatPosts(posts: Posts[]) {
     },
     community: {
       name: post.communityName,
-      logoUrl: post.community.logoUrl,
+      logoUrl: post.community?.logoUrl,
     },
     createdAt: post.createdAt,
     updatedAt: post.updatedAt,
@@ -51,9 +51,8 @@ function reformatUsers(user: Users) {
   const formattedUsers = {
     id: user.id,
     username: user.username,
-    gender: user.gender,
     avatarUrl: user.avatarUrl,
-    createdAt: user.registeredAt,
+    registeredAt: user.registeredAt,
   };
   return formattedUsers;
 }
