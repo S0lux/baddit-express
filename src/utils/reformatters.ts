@@ -16,6 +16,7 @@ function reformatPosts(posts: Posts[]) {
     type: post.type,
     title: post.title,
     content: post.content,
+    mediaUrls: post.mediaUrls,
     score: post.score,
     voteState: post.vote[0]?.state || null,
     commentCount: post._count.comments,
