@@ -27,13 +27,13 @@ const router = express.Router();
  *    - in: query
  *      name: postId
  *      schema:
- *        type: string
+ *        type: string | undefined
  *    - in: query
- *      name: parentId
+ *      name: commentId
  *      schema:
  *          type: string | undefined
  *    - in: query
- *      name: authorId
+ *      name: authorName
  *      schema:
  *          type: string | undefined
  *   responses:
@@ -74,6 +74,8 @@ router.use(ensureAuthenticated);
  *   responses:
  *    200:
  *     description: Comments created successfully
+ *    400:
+ *     description: Bad request
  *    500:
  *     description: Internal server error
  */
