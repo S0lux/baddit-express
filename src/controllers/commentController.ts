@@ -5,6 +5,7 @@ import commentService from "../services/commentService";
 import { postRepository } from "../repositories/postRepositorry";
 import communityService from "../services/communityService";
 import { voteCommentBodyValidator } from "../validators/schemas/voteCommentBody";
+import { reformatters } from "../utils/reformatters";
 
 const createComment = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.user!.id;
@@ -36,7 +37,7 @@ const getCommentsWithQueries = async (req: Request, res: Response, next: NextFun
       authorName,
       cursor,
     });
-    res.status(200).json(comments);
+    res.status(200).json(reformatters.reformatComments(comments));
   } catch (err) {
     next(err);
   }

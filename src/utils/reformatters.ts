@@ -57,8 +57,29 @@ function reformatUsers(user: Users) {
   return formattedUsers;
 }
 
+function reformatComments(comments: any) {
+  // Helper function to transform a single comment
+  function transformComment(comment: any) {
+    // Set voteState based on CommentVote array
+    comment.voteState = comment.CommentVote.length > 0 ? comment.CommentVote[0].state : null;
+    // Remove the original CommentVote array
+    delete comment.CommentVote;
+
+    // Recursively transform children comments if they exist
+    if (comment.children && comment.children.length > 0) {
+      comment.children = comment.children.map(transformComment);
+    }
+
+    return comment;
+  }
+
+  // Transform all top-level comments
+  return comments.map(transformComment);
+}
+
 export const reformatters = {
   reformatPosts,
   reformatUserCommunities,
   reformatUsers,
+  reformatComments,
 };
