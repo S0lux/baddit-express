@@ -61,6 +61,11 @@ export const APP_ERROR_CODE = {
     message: "User is already a moderator of this community",
   },
 
+  userIsAlreadyAdmin: {
+    code: "USER_IS_ALREADY_ADMIN",
+    message: "User is already a admin of this community",
+  },
+
   userAlreadyInCommunity: {
     code: "USER_ALREADY_IN_COMMUNITY",
     message: "User is already in this community",

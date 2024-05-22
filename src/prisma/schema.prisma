@@ -130,6 +130,7 @@ enum UserRole {
 enum CommunityRole {
   MEMBER
   MODERATOR
+  ADMIN
 }
 
 enum Status {
