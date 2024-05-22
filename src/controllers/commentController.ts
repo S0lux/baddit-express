@@ -6,11 +6,16 @@ import { postRepository } from "../repositories/postRepositorry";
 import communityService from "../services/communityService";
 import { voteCommentBodyValidator } from "../validators/schemas/voteCommentBody";
 import { reformatters } from "../utils/reformatters";
+import { HttpException } from "../exception/httpError";
+import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
 
 const createComment = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.user!.id;
   const { content, postId, parentId }: z.infer<typeof commentBodyValidator> = req.body;
   try {
+    if (!postId) {
+      throw new HttpException(HttpStatusCode.BAD_REQUEST, APP_ERROR_CODE.unexpectedBody);
+    }
     await commentService.createComment(
       content,
       userId,
