@@ -68,6 +68,8 @@ function reformatComments(comments: any) {
     // Recursively transform children comments if they exist
     if (comment.children && comment.children.length > 0) {
       comment.children = comment.children.map(transformComment);
+    } else {
+      comment.children = [];
     }
 
     return comment;
