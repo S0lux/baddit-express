@@ -138,12 +138,14 @@ class PostService {
       if (
         post[0].authorId !== user.id &&
         user.role !== "ADMIN" &&
-        userCommunityRole?.communityRole !== "MODERATOR"
+        userCommunityRole?.communityRole !== "MODERATOR" &&
+        userCommunityRole?.communityRole !== "ADMIN"
       ) {
         throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.insufficientPermissions);
       }
       await postRepository.deletePost(postId);
     } catch (err) {
+      if (err instanceof HttpException) throw err;
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }
   }
