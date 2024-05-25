@@ -39,12 +39,13 @@ class communityService {
     return community;
   }
 
-  async getUserInCommunity(userId: string, communityId: string) {
+  async getUserInCommunity(username: string, communityId: string) {
     try {
+      return await communityRepository.getUserInCommunity(username, communityId);
     } catch (err) {
-      throw new HttpException(HttpStatusCode.NOT_FOUND, APP_ERROR_CODE.userNotFound);
+      console.log(err);
+      throw new HttpException(HttpStatusCode.NOT_FOUND, APP_ERROR_CODE.communityMemberNotFound);
     }
-    return await communityRepository.getUserInCommunity(userId, communityId);
   }
 
   async getUserCommunityRole(userid: string, communityId: string) {
