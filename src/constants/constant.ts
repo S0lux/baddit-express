@@ -56,6 +56,11 @@ export const APP_ERROR_CODE = {
     message: "This community does not exist",
   },
 
+  communityMemberNotFound: {
+    code: "COMMUNITY_MEMBER_NOT_FOUND",
+    message: "User is not a member of this community",
+  },
+
   userIsAlreadyModerator: {
     code: "USER_IS_ALREADY_MODERATOR",
     message: "User is already a moderator of this community",

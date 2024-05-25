@@ -9,12 +9,33 @@ const createCommunity = async (req: Request, res: Response, next: NextFunction) 
     const data = { ...req.body, ownerId: req.user!.id };
     const community = await communityService.createCommunity(data);
     const admin = await communityService.createCommunityAdmin(req.user!.id, community.id);
+    await communityService.updateCommunityMemberCount(community.name, community.memberCount + 1);
     console.log(admin);
     return res.status(201).json({ message: "Community created" });
   } catch (error) {
     next(error);
   }
 };
+
+const createModerator = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const communityName = req.body.communityName as string;
+    const memberId = req.body.memberId as string;
+    if (!communityName || !memberId) {
+      throw new HttpException(HttpStatusCode.BAD_REQUEST, APP_ERROR_CODE.unexpectedBody);
+    }
+    const communityMatched = await communityService.getCommunityByName(communityName);
+    if (communityMatched.ownerId !== req.user!.id) {
+      throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.insufficientPermissions);
+    }
+    const memberFound = await communityService.getUserInCommunity(memberId, communityMatched.id);
+    //if no community found -> throw 404 in service
+    communityService.createCommunityModerator(memberId, communityMatched.id);
+  } catch (err) {
+    next(err);
+  }
+};
+
 const joinCommunity = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const community = await communityService.getCommunityByName(req.params["communityName"]);
@@ -126,6 +147,7 @@ const updateCommunityBanner = async (req: Request, res: Response, next: NextFunc
 
 export const communityController = {
   createCommunity,
+  createModerator,
   getCommunity,
   getCommunitiesWithQueries,
   joinCommunity,
