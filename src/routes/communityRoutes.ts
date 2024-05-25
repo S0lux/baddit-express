@@ -185,7 +185,39 @@ router.get("/:communityName", communityController.getCommunity);
  */
 router.get("/", communityController.getCommunitiesWithQueries);
 
+/**
+ * @swagger
+ * /v1/communities/{communityName}/members:
+ *  get:
+ *   summary: Get All members of Community
+ *   description: Get All members of Community
+ *   tags: [Communities]
+ *   responses:
+ *    200:
+ *     description: Retrieved Successfully
+ *    404:
+ *     description: Community not found
+ *    500:
+ *     description: Internal server error
+ *
+ */
 router.get("/:communityName/members", communityController.getMembers);
+/**
+ * @swagger
+ * /v1/communities/{communityName}/moderators:
+ *  get:
+ *   summary: Get All moderators of Community
+ *   description: Get All moderators of Community
+ *   tags: [Communities]
+ *   responses:
+ *    200:
+ *     description: Retrieved Successfully
+ *    404:
+ *     description: Community not found
+ *    500:
+ *     description: Internal server error
+ *
+ */
 router.get("/:communityName/moderators", communityController.getModerators);
 
 router.use(ensureAuthenticated);
