@@ -333,7 +333,7 @@ router.post("/:communityName/moderator", communityController.moderateMember);
  *     description: Internal server error
  *
  */
-router.delete("/:communityName/moderator/:memberName", communityController.moderateMember);
+router.delete("/:communityName/moderator/:memberName", communityController.unModerateMember);
 
 /**
  * @swagger

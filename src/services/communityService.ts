@@ -11,18 +11,19 @@ class communityService {
     return newCommunity;
   }
 
-  async moderateMember(userId: string, communityId: string) {
-    const newModerator = await communityRepository.moderateMember(userId, communityId);
+  async moderateMember(username: string, communityId: string) {
+    const newModerator = await communityRepository.moderateMember(username, communityId);
     if (!newModerator)
       throw new HttpException(HttpStatusCode.CONFLICT, APP_ERROR_CODE.userIsAlreadyModerator);
     return newModerator;
   }
 
-  async unModerateMember(userId: string, communityId: string) {
-    const member = await communityRepository.unModerateMember(userId, communityId);
-    if (!member)
-      throw new HttpException(HttpStatusCode.CONFLICT, APP_ERROR_CODE.userIsAlreadyModerator);
-    return member;
+  async unModerateMember(username: string, communityId: string) {
+    try {
+      await communityRepository.unModerateMember(username, communityId);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async createCommunityMember(data: { communityId: string; userId: string }) {

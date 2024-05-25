@@ -42,7 +42,7 @@ const moderateMember = async (req: Request, res: Response, next: NextFunction) =
       throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.onlyAcceptedForMember);
     }
     // //if no community found -> throw 404 in service
-    communityService.moderateMember(memberFound.userId, communityMatched.id);
+    communityService.moderateMember(memberName, communityMatched.id);
 
     return res.status(201).json({ message: "Moderate Successfully" });
   } catch (err) {
@@ -72,17 +72,22 @@ const getModerators = async (req: Request, res: Response, next: NextFunction) =>
 
 const unModerateMember = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const communityName = req.params.communityName as string;
-    const memberName = req.params.memberName as string;
+    const communityName = req.params["communityName"] as string;
+    const memberName = req.params["memberName"] as string;
     const communityMatched = await communityService.getCommunityByName(communityName);
     if (communityMatched.ownerId !== req.user!.id) {
       throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.insufficientPermissions);
     }
     const memberFound = await communityService.getUserInCommunity(memberName, communityMatched.id);
-    if (memberFound?.communityRole !== CommunityRole.MODERATOR) {
-      throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
+
+    if (!memberFound) {
+      throw new HttpException(HttpStatusCode.NOT_FOUND, APP_ERROR_CODE.communityMemberNotFound);
     }
-    communityService.unModerateMember(memberFound.userId, communityMatched.id);
+
+    if (memberFound!.communityRole !== CommunityRole.MODERATOR) {
+      throw new HttpException(HttpStatusCode.CONFLICT, APP_ERROR_CODE.userIsAlreadyMember);
+    }
+    communityService.unModerateMember(memberName, communityMatched.id);
 
     return res.status(201).json({ message: "UnModerate Successfully" });
   } catch (err) {
