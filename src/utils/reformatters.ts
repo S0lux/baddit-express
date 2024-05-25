@@ -65,6 +65,17 @@ function reformatComments(comments: any) {
     // Remove the original CommentVote array
     delete comment.CommentVote;
 
+    comment.community =
+      comment.post?.community != null
+        ? {
+            id: comment.post.community.id,
+            name: comment.post.community.name,
+            logoUrl: comment.post.community.logoUrl,
+          }
+        : null;
+
+    delete comment.post;
+
     // Recursively transform children comments if they exist
     if (comment.children && comment.children.length > 0) {
       comment.children = comment.children.map(transformComment);

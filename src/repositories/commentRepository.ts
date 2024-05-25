@@ -68,6 +68,11 @@ const getCommentsWithQueries = async (queries: {
           username: true,
         },
       },
+      post: {
+        include: {
+          community: true,
+        },
+      },
     },
   });
   if (queries.authorName === undefined && queries.commentId === undefined) {
@@ -114,6 +119,18 @@ async function getNestedCommentsRecursively(comments: Comment[], requesterId?: s
           select: {
             avatarUrl: true,
             username: true,
+          },
+        },
+        post: {
+          select: {
+            author: true,
+            community: {
+              select: {
+                id: true,
+                name: true,
+                logoUrl: true,
+              },
+            },
           },
         },
       },
