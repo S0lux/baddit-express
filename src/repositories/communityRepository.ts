@@ -21,7 +21,7 @@ const createCommunityModerator = async (
     communityRole: communityRole,
     joined: true,
   };
-  return await prisma.user_Community.create({ data }).catch((err) => null);
+  return await prisma.user_Community.create({ data });
 };
 
 const createCommunityAdmin = async (
@@ -56,10 +56,10 @@ const getUserCommunityRole = async (userId: string, communityId: string) => {
   });
 };
 
-const getUserInCommunity = async (userId: string, communityId: string) => {
+const getUserInCommunity = async (username: string, communityId: string) => {
   return await prisma.user_Community.findFirst({
     where: {
-      userId: userId,
+      user: { username: username },
       communityId: communityId,
     },
   });

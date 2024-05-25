@@ -259,15 +259,15 @@ router.post("/:communityName/members", communityController.joinCommunity);
  *      schema:
  *       type: object
  *       required:
- *        - communityName
  *        - memberId
+ *        - action
  *       properties:
- *        communityName:
- *         type: string
- *         description: Name of community
  *        memberId:
  *         type: string
  *         description: Id of member
+ *        action:
+ *         type: string
+ *         description: Moderate or Unmoderate
  *   responses:
  *    201:
  *     description: Create moderator successfully

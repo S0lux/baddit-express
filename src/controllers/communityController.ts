@@ -3,6 +3,7 @@ import communityService from "../services/communityService";
 import postService from "../services/postService";
 import { HttpException } from "../exception/httpError";
 import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
+import { CommunityRole } from "@prisma/client";
 
 const createCommunity = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -19,18 +20,23 @@ const createCommunity = async (req: Request, res: Response, next: NextFunction) 
 
 const createModerator = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const communityName = req.body.communityName as string;
-    const memberId = req.body.memberId as string;
-    if (!communityName || !memberId) {
+    const communityName = req.params.communityName as string;
+    const memberName = req.body.memberName as string;
+    if (!communityName || !memberName) {
       throw new HttpException(HttpStatusCode.BAD_REQUEST, APP_ERROR_CODE.unexpectedBody);
     }
     const communityMatched = await communityService.getCommunityByName(communityName);
+
     if (communityMatched.ownerId !== req.user!.id) {
       throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.insufficientPermissions);
     }
-    const memberFound = await communityService.getUserInCommunity(memberId, communityMatched.id);
+    const memberFound = await communityService.getUserInCommunity(memberName, communityMatched.id);
+
+    if (memberFound!.communityRole !== CommunityRole.MEMBER) {
+      throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.onlyAcceptedForMember);
+    }
     //if no community found -> throw 404 in service
-    communityService.createCommunityModerator(memberId, communityMatched.id);
+    communityService.createCommunityModerator(memberName, communityMatched.id);
   } catch (err) {
     next(err);
   }
