@@ -8,6 +8,7 @@ import { voteCommentBodyValidator } from "../validators/schemas/voteCommentBody"
 import { reformatters } from "../utils/reformatters";
 import { HttpException } from "../exception/httpError";
 import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
+import userService from "../services/userService";
 
 const createComment = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.user!.id;

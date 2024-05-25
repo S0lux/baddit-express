@@ -247,6 +247,44 @@ router.post("/:communityName/members", communityController.joinCommunity);
 
 /**
  * @swagger
+ * /v1/communities/{communityName}/morderator:
+ *  post:
+ *   summary: Create moderator of community
+ *   description: Create moderator of community
+ *   tags: [Communities]
+ *   requestBody:
+ *    required: true
+ *    content:
+ *     application/json:
+ *      schema:
+ *       type: object
+ *       required:
+ *        - communityName
+ *        - memberId
+ *       properties:
+ *        communityName:
+ *         type: string
+ *         description: Name of community
+ *        memberId:
+ *         type: string
+ *         description: Id of member
+ *   responses:
+ *    201:
+ *     description: Create moderator successfully
+ *    401:
+ *     description: User not authenticated
+ *    403:
+ *     description: User has no permission
+ *    404:
+ *     description: Community or Member not found
+ *    500:
+ *     description: Internal server error
+ *
+ */
+router.post("/:communityName/moderator", communityController.createModerator);
+
+/**
+ * @swagger
  * /v1/communities/{communityName}/members:
  *  delete:
  *   summary: Unjoin a community

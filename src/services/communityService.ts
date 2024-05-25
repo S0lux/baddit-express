@@ -40,6 +40,10 @@ class communityService {
   }
 
   async getUserInCommunity(userId: string, communityId: string) {
+    try {
+    } catch (err) {
+      throw new HttpException(HttpStatusCode.NOT_FOUND, APP_ERROR_CODE.userNotFound);
+    }
     return await communityRepository.getUserInCommunity(userId, communityId);
   }
 
