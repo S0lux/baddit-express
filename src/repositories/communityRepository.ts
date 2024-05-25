@@ -153,7 +153,7 @@ const getCommunitiesWithQueries = async (queries: {
 
 const getAllCommunitiesJoined = async (queries: { userId: string }) => {
   return await prisma.user_Community.findMany({
-    where: { userId: queries.userId, joined: true, banned: false },
+    where: { userId: queries.userId, joined: true, banned: false, deleted: false },
     include: {
       community: true,
     },
