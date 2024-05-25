@@ -10,18 +10,18 @@ const getCommunityByName = async (name: string) => {
   return await prisma.community.findUnique({ where: { name: name, deleted: false } });
 };
 
-const createCommunityModerator = async (
-  userId: string,
-  communityId: string,
-  communityRole: CommunityRole = CommunityRole.MODERATOR
-) => {
-  const data = {
-    userId: userId,
-    communityId: communityId,
-    communityRole: communityRole,
-    joined: true,
-  };
-  return await prisma.user_Community.create({ data });
+const moderateMember = async (username: string, communityId: string) => {
+  return await prisma.user_Community.updateMany({
+    where: { user: { username }, communityId: communityId },
+    data: { communityRole: CommunityRole.MODERATOR },
+  });
+};
+
+const unModerateMember = async (username: string, communityId: string) => {
+  return await prisma.user_Community.updateMany({
+    where: { user: { username }, communityId: communityId },
+    data: { communityRole: CommunityRole.MEMBER },
+  });
 };
 
 const createCommunityAdmin = async (
@@ -48,6 +48,45 @@ const createCommunityMember = async (data: { communityId: string; userId: string
       },
     })
     .catch((err) => null);
+};
+
+const getJoined = async (communityName: string) => {
+  return await prisma.user_Community.findMany({
+    where: {
+      community: { name: communityName },
+      joined: true,
+      banned: false,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+          avatarUrl: true,
+        },
+      },
+    },
+  });
+};
+
+const getModerators = async (communityName: string) => {
+  return await prisma.user_Community.findMany({
+    where: {
+      community: { name: communityName },
+      banned: false,
+      communityRole: CommunityRole.MODERATOR,
+      joined: true,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+          avatarUrl: true,
+        },
+      },
+    },
+  });
 };
 
 const getUserCommunityRole = async (userId: string, communityId: string) => {
@@ -114,7 +153,7 @@ const getCommunitiesWithQueries = async (queries: {
 
 const getAllCommunitiesJoined = async (queries: { userId: string }) => {
   return await prisma.user_Community.findMany({
-    where: { userId: queries.userId, joined: true, banned: false },
+    where: { userId: queries.userId, joined: true, banned: false, deleted: false },
     include: {
       community: true,
     },
@@ -128,10 +167,10 @@ const deleteCommunity = async (communityName: string) => {
   });
 };
 
-const unJoinCommunity = async (userId: string, communityId: string) => {
+const unJoinCommunity = async (username: string, communityId: string) => {
   return await prisma.user_Community.updateMany({
     where: {
-      userId: userId,
+      user: { username },
       communityId: communityId,
     },
     data: {
@@ -140,10 +179,10 @@ const unJoinCommunity = async (userId: string, communityId: string) => {
   });
 };
 
-const joinCommunity = async (userId: string, communityId: string) => {
+const joinCommunity = async (username: string, communityId: string) => {
   return await prisma.user_Community.updateMany({
     where: {
-      userId: userId,
+      user: { username: username },
       communityId: communityId,
     },
     data: {
@@ -175,7 +214,7 @@ const updateBanner = async (name: string, banner: string) => {
 
 export const communityRepository = {
   createCommunity,
-  createCommunityModerator,
+  moderateMember,
   createCommunityMember,
   createCommunityAdmin,
   getCommunityByName,
@@ -183,9 +222,12 @@ export const communityRepository = {
   getUserCommunityRole,
   getUserInCommunity,
   getAllCommunitiesJoined,
+  getJoined,
+  getModerators,
   deleteCommunity,
   updateCommunityMemberCount,
   unJoinCommunity,
+  unModerateMember,
   joinCommunity,
   updateLogo,
   updateBanner,
