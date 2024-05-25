@@ -13,7 +13,7 @@ model User {
   hashedPassword          String
   email                   String           @unique
   emailVerified           Boolean          @default(false)
-  avatarUrl               String           @default("https://placehold.co/400.png")
+  avatarUrl               String           @default("https://res.cloudinary.com/drzvajzd4/image/upload/f_auto,q_auto/v1/defaults/default_avatar")
   status                  Status           @default(STANDARD)
   role                    UserRole         @default(USER)
   gender                  Gender           @default(Unknown)
@@ -43,7 +43,7 @@ model Community {
   ownerId     String
   description String
   logoUrl     String           @default("https://placehold.co/400.png")
-  bannerUrl   String           @default("https://placehold.co/400.png")
+  bannerUrl   String           @default("https://placehold.co/1500x400/png")
   status      Status           @default(STANDARD)
   memberCount Int              @default(0)
   deleted     Boolean          @default(false)

@@ -43,7 +43,6 @@ const getCommentsWithQueries = async (queries: {
     where: {
       id: queries.commentId,
       parentId: queries.commentId || queries.authorName ? undefined : null,
-      deleted: false,
       postId: queries.postId,
       author: { username: queries.authorName },
     },
@@ -74,7 +73,23 @@ const getCommentsWithQueries = async (queries: {
   if (queries.authorName === undefined && queries.commentId === undefined) {
     await getNestedCommentsRecursively(rootComments, queries.requesterId);
   }
-  return rootComments;
+  const editedComments = rootComments.map((comment) => {
+    if (comment.deleted == false) return comment;
+
+    // Redact comment content and author if deleted
+    return {
+      ...comment,
+      content: "[deleted]",
+      author: {
+        avatarUrl:
+          "https://res.cloudinary.com/drzvajzd4/image/upload/f_auto,q_auto/v1/defaults/default_avatar_anonymous",
+        username: "[deleted]",
+      },
+      authorId: "[deleted]",
+    };
+  });
+
+  return editedComments;
 };
 
 //Add-on function
@@ -84,7 +99,6 @@ async function getNestedCommentsRecursively(comments: Comment[], requesterId?: s
     const nestedComments = await prisma.comment.findMany({
       where: {
         parentId: comment.id,
-        deleted: false,
       },
       include: {
         children: true,
@@ -107,8 +121,24 @@ async function getNestedCommentsRecursively(comments: Comment[], requesterId?: s
 
     // Nếu có các comment con, gán chúng vào thuộc tính children và tiếp tục đệ quy
     if (nestedComments.length > 0) {
-      comment.children = nestedComments;
-      await getNestedCommentsRecursively(nestedComments, requesterId);
+      const editedComments = nestedComments.map((comment) => {
+        if (comment.deleted == false) return comment;
+
+        // Redact comment content and author if deleted
+        return {
+          ...comment,
+          content: "[deleted]",
+          author: {
+            avatarUrl:
+              "https://res.cloudinary.com/drzvajzd4/image/upload/f_auto,q_auto/v1/defaults/default_avatar_anonymous",
+            username: "[deleted]",
+          },
+          authorId: "[deleted]",
+        };
+      });
+
+      comment.children = editedComments;
+      await getNestedCommentsRecursively(editedComments, requesterId);
     }
   }
 }
