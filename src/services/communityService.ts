@@ -11,14 +11,21 @@ class communityService {
     return newCommunity;
   }
 
-  async createCommunityModerator(userId: string, communityId: string) {
-    const newModerator = await communityRepository.createCommunityModerator(userId, communityId);
+  async moderateMember(userId: string, communityId: string) {
+    const newModerator = await communityRepository.moderateMember(userId, communityId);
     if (!newModerator)
       throw new HttpException(HttpStatusCode.CONFLICT, APP_ERROR_CODE.userIsAlreadyModerator);
     return newModerator;
   }
 
-  async createCommunityMember(data: { userId: string; communityId: string }) {
+  async unModerateMember(userId: string, communityId: string) {
+    const member = await communityRepository.unModerateMember(userId, communityId);
+    if (!member)
+      throw new HttpException(HttpStatusCode.CONFLICT, APP_ERROR_CODE.userIsAlreadyModerator);
+    return member;
+  }
+
+  async createCommunityMember(data: { communityId: string; userId: string }) {
     const newMember = await communityRepository.createCommunityMember(data);
     if (!newMember) {
       throw new HttpException(HttpStatusCode.CONFLICT, APP_ERROR_CODE.userAlreadyInCommunity);
@@ -37,6 +44,22 @@ class communityService {
     if (!community)
       throw new HttpException(HttpStatusCode.NOT_FOUND, APP_ERROR_CODE.communityNotFound);
     return community;
+  }
+
+  async getJoined(communityName: string) {
+    try {
+      return await communityRepository.getJoined(communityName);
+    } catch (err) {
+      throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
+    }
+  }
+
+  async getModerators(communityName: string) {
+    try {
+      return await communityRepository.getModerators(communityName);
+    } catch (err) {
+      throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
+    }
   }
 
   async getUserInCommunity(username: string, communityId: string) {
@@ -97,18 +120,18 @@ class communityService {
     }
   }
 
-  async joinCommunity(userId: string, communityId: string) {
-    const user = await communityRepository.getUserInCommunity(userId, communityId);
+  async joinCommunity(username: string, communityId: string) {
+    const user = await communityRepository.getUserInCommunity(username, communityId);
     if (user!.joined) {
       throw new HttpException(HttpStatusCode.CONFLICT, APP_ERROR_CODE.userAlreadyInCommunity);
     } else {
-      await communityRepository.joinCommunity(userId, communityId);
+      await communityRepository.joinCommunity(username, communityId);
     }
   }
 
-  async unJoinCommunity(userId: string, communityId: string) {
-    const user = await communityRepository.getUserInCommunity(userId, communityId);
-    if (user!.joined) await communityRepository.unJoinCommunity(userId, communityId);
+  async unJoinCommunity(username: string, communityId: string) {
+    const user = await communityRepository.getUserInCommunity(username, communityId);
+    if (user!.joined) await communityRepository.unJoinCommunity(username, communityId);
     else throw new HttpException(HttpStatusCode.CONFLICT, APP_ERROR_CODE.userAlreadyOutCommunity);
   }
   async updateCommunityLogo(community: Community, user: Express.User, logoUrl: string) {

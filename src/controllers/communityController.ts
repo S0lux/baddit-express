@@ -4,6 +4,8 @@ import postService from "../services/postService";
 import { HttpException } from "../exception/httpError";
 import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
 import { CommunityRole } from "@prisma/client";
+import { reformatters } from "../utils/reformatters";
+import userService from "../services/userService";
 
 const createCommunity = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -18,7 +20,7 @@ const createCommunity = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
-const createModerator = async (req: Request, res: Response, next: NextFunction) => {
+const moderateMember = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const communityName = req.params.communityName as string;
     const memberName = req.body.memberName as string;
@@ -32,11 +34,57 @@ const createModerator = async (req: Request, res: Response, next: NextFunction) 
     }
     const memberFound = await communityService.getUserInCommunity(memberName, communityMatched.id);
 
-    if (memberFound!.communityRole !== CommunityRole.MEMBER) {
+    if (!memberFound) {
+      throw new HttpException(HttpStatusCode.NOT_FOUND, APP_ERROR_CODE.communityMemberNotFound);
+    }
+
+    if (memberFound?.communityRole !== CommunityRole.MEMBER) {
       throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.onlyAcceptedForMember);
     }
-    //if no community found -> throw 404 in service
-    communityService.createCommunityModerator(memberName, communityMatched.id);
+    // //if no community found -> throw 404 in service
+    communityService.moderateMember(memberFound.userId, communityMatched.id);
+
+    return res.status(201).json({ message: "Moderate Successfully" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getMembers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const communityName = req.params.communityName as string;
+    const rawMembers = await communityService.getJoined(communityName);
+    return res.status(200).json(reformatters.reformatMembers(rawMembers));
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getModerators = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const communityName = req.params.communityName as string;
+    const moderators = await communityService.getModerators(communityName);
+    return res.status(200).json(reformatters.reformatMembers(moderators));
+  } catch (err) {
+    next(err);
+  }
+};
+
+const unModerateMember = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const communityName = req.params.communityName as string;
+    const memberName = req.params.memberName as string;
+    const communityMatched = await communityService.getCommunityByName(communityName);
+    if (communityMatched.ownerId !== req.user!.id) {
+      throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.insufficientPermissions);
+    }
+    const memberFound = await communityService.getUserInCommunity(memberName, communityMatched.id);
+    if (memberFound?.communityRole !== CommunityRole.MODERATOR) {
+      throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
+    }
+    communityService.unModerateMember(memberFound.userId, communityMatched.id);
+
+    return res.status(201).json({ message: "UnModerate Successfully" });
   } catch (err) {
     next(err);
   }
@@ -45,14 +93,18 @@ const createModerator = async (req: Request, res: Response, next: NextFunction) 
 const joinCommunity = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const community = await communityService.getCommunityByName(req.params["communityName"]);
+    const getMe = await userService.getUserById(req.user!.id);
     const data = { userId: req.user!.id, communityId: community!.id };
-    const userMatched = await communityService.getUserInCommunity(data.userId, data.communityId);
+    const userMatched = await communityService.getUserInCommunity(
+      getMe!.username,
+      data.communityId
+    );
     if (userMatched) {
-      await communityService.joinCommunity(data.userId, data.communityId);
+      await communityService.joinCommunity(getMe!.username, data.communityId);
     } else {
       await communityService.createCommunityMember(data);
     }
-    //if no error has been thrown when creating member, go to this line
+    ////if no error has been thrown when creating member, go to this line
     await communityService.updateCommunityMemberCount(community.name, community.memberCount + 1); // this is update for joining , so just plus one, if unjoin just substract one
     return res.status(201).json({ message: "Joined" });
   } catch (error) {
@@ -63,8 +115,9 @@ const joinCommunity = async (req: Request, res: Response, next: NextFunction) =>
 const unJoinCommunity = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const community = await communityService.getCommunityByName(req.params["communityName"]);
+    const getMe = await userService.getUserById(req.user!.id);
     const userId = req.user!.id;
-    await communityService.unJoinCommunity(userId, community.id);
+    await communityService.unJoinCommunity(getMe!.username, community.id);
     await communityService.updateCommunityMemberCount(community.name, community.memberCount - 1);
     return res.status(201).json({ message: "Unjoined Community Successfully" });
   } catch (err) {
@@ -78,11 +131,18 @@ const getCommunity = async (req: Request, res: Response, next: NextFunction) => 
   try {
     const communityFound = await communityService.getCommunityByName(req.params["communityName"]);
     if (userId) {
-      const userFound = await communityService.getUserInCommunity(userId, communityFound.id);
+      const getMe = await userService.getUserById(userId);
+      const userFound = await communityService.getUserInCommunity(
+        getMe!.username,
+        communityFound.id
+      );
+      console.log(userFound);
       if (userFound) {
         if (userFound.joined) joinStatus = "Joined";
         else joinStatus = "Not Joined";
-      } else joinStatus = "Not Joined";
+      } else {
+        joinStatus = "Not Joined";
+      }
     }
     return res.status(200).json({ community: communityFound, joinStatus: joinStatus });
   } catch (error) {
@@ -153,12 +213,15 @@ const updateCommunityBanner = async (req: Request, res: Response, next: NextFunc
 
 export const communityController = {
   createCommunity,
-  createModerator,
+  moderateMember,
   getCommunity,
   getCommunitiesWithQueries,
+  getModerators,
+  getMembers,
   joinCommunity,
   deleteCommunity,
   updateCommunityBanner,
   updateCommunityLogo,
+  unModerateMember,
   unJoinCommunity,
 };

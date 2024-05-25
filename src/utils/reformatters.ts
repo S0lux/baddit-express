@@ -10,6 +10,18 @@ type UserCommunities = Prisma.User_CommunityGetPayload<{
 
 type Users = Prisma.UserGetPayload<{}>;
 
+type Members = Prisma.User_CommunityGetPayload<{
+  include: {
+    user: {
+      select: {
+        id: true;
+        username: true;
+        avatarUrl: true;
+      };
+    };
+  };
+}>;
+
 function reformatPosts(posts: Posts[]) {
   const formattedPosts = posts.map((post) => ({
     id: post.id,
@@ -90,9 +102,22 @@ function reformatComments(comments: any) {
   return comments.map(transformComment);
 }
 
+function reformatMembers(members: Members[]) {
+  const formattedMembers = members.map((data) => ({
+    userId: data.userId,
+    username: data.user.username,
+    avatarUrl: data.user.avatarUrl,
+    communityRole: data.communityRole,
+    joined: data.joined,
+    banned: data.banned,
+  }));
+  return formattedMembers;
+}
+
 export const reformatters = {
   reformatPosts,
   reformatUserCommunities,
   reformatUsers,
   reformatComments,
+  reformatMembers,
 };

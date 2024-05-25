@@ -63,7 +63,7 @@ export const APP_ERROR_CODE = {
 
   onlyAcceptedForMember: {
     code: "ONLY_ACCEPT_FOR_MEMBER",
-    message: "Can only create moderator for member role",
+    message: "Can only create moderator for member",
   },
 
   userIsAlreadyModerator: {
@@ -74,6 +74,10 @@ export const APP_ERROR_CODE = {
   userIsAlreadyAdmin: {
     code: "USER_IS_ALREADY_ADMIN",
     message: "User is already a admin of this community",
+  },
+  userIsAlreadyMember: {
+    code: "USER_IS_ALREADY_MEMBER",
+    message: "User is already a member of this community",
   },
 
   userAlreadyInCommunity: {

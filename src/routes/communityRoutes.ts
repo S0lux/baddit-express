@@ -185,6 +185,9 @@ router.get("/:communityName", communityController.getCommunity);
  */
 router.get("/", communityController.getCommunitiesWithQueries);
 
+router.get("/:communityName/members", communityController.getMembers);
+router.get("/:communityName/moderators", communityController.getModerators);
+
 router.use(ensureAuthenticated);
 
 /**
@@ -247,10 +250,10 @@ router.post("/:communityName/members", communityController.joinCommunity);
 
 /**
  * @swagger
- * /v1/communities/{communityName}/morderator:
+ * /v1/communities/{communityName}/moderator:
  *  post:
- *   summary: Create moderator of community
- *   description: Create moderator of community
+ *   summary: Moderate Member
+ *   description: Moderate Member
  *   tags: [Communities]
  *   requestBody:
  *    required: true
@@ -260,17 +263,13 @@ router.post("/:communityName/members", communityController.joinCommunity);
  *       type: object
  *       required:
  *        - memberId
- *        - action
  *       properties:
- *        memberId:
+ *        memberName:
  *         type: string
- *         description: Id of member
- *        action:
- *         type: string
- *         description: Moderate or Unmoderate
+ *         description: Name of member
  *   responses:
  *    201:
- *     description: Create moderator successfully
+ *     description: Moderate successfully
  *    401:
  *     description: User not authenticated
  *    403:
@@ -281,7 +280,28 @@ router.post("/:communityName/members", communityController.joinCommunity);
  *     description: Internal server error
  *
  */
-router.post("/:communityName/moderator", communityController.createModerator);
+router.post("/:communityName/moderator", communityController.moderateMember);
+/**
+ * @swagger
+ * /v1/communities/{communityName}/moderator/{memberName}:
+ *  delete:
+ *   summary: UnModerate Member
+ *   description: UnModerate Member
+ *   tags: [Communities]
+ *   responses:
+ *    201:
+ *     description: UnModerate successfully
+ *    401:
+ *     description: User not authenticated
+ *    403:
+ *     description: User has no permission
+ *    404:
+ *     description: Community or Member not found
+ *    500:
+ *     description: Internal server error
+ *
+ */
+router.delete("/:communityName/moderator/:memberName", communityController.moderateMember);
 
 /**
  * @swagger
