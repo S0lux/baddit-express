@@ -282,7 +282,7 @@ router.post("/:communityName/members", communityController.joinCommunity);
 
 /**
  * @swagger
- * /v1/communities/{communityName}/moderator:
+ * /v1/communities/{communityName}/moderators:
  *  post:
  *   summary: Moderate Member
  *   description: Moderate Member
@@ -312,10 +312,10 @@ router.post("/:communityName/members", communityController.joinCommunity);
  *     description: Internal server error
  *
  */
-router.post("/:communityName/moderator", communityController.moderateMember);
+router.post("/:communityName/moderators", communityController.moderateMember);
 /**
  * @swagger
- * /v1/communities/{communityName}/moderator/{memberName}:
+ * /v1/communities/{communityName}/moderators/{memberName}:
  *  delete:
  *   summary: UnModerate Member
  *   description: UnModerate Member
@@ -333,7 +333,7 @@ router.post("/:communityName/moderator", communityController.moderateMember);
  *     description: Internal server error
  *
  */
-router.delete("/:communityName/moderator/:memberName", communityController.unModerateMember);
+router.delete("/:communityName/moderators/:memberName", communityController.unModerateMember);
 
 /**
  * @swagger
