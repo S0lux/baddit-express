@@ -61,6 +61,7 @@ const getPostsWithQueries = async (req: Request, res: Response, next: NextFuncti
   const requesterId = req.user?.id;
   const communityName = req.query.communityName as string | undefined;
   const postTitle = req.query.postTitle as string | undefined;
+  const orderByScore = req.query.orderByScore as string | undefined;
 
   try {
     const posts = await postService.getPostsWithQueries({
@@ -70,6 +71,7 @@ const getPostsWithQueries = async (req: Request, res: Response, next: NextFuncti
       communityName,
       cursor,
       postTitle,
+      orderByScore,
     });
 
     res.status(200).json(reformatters.reformatPosts(posts));

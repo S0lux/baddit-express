@@ -28,6 +28,7 @@ class CommentService {
     requesterId?: string;
     authorName?: string;
     cursor?: string;
+    orderByScore?: string;
   }) {
     try {
       return await commentRepository.getCommentsWithQueries(queries);

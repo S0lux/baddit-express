@@ -21,6 +21,7 @@ const getPostsWithQueries = async (queries: {
   communityName?: string;
   cursor?: string;
   postTitle?: string;
+  orderByScore?: string;
 }) => {
   return await prisma.post.findMany({
     where: {
@@ -33,7 +34,7 @@ const getPostsWithQueries = async (queries: {
     take: 10,
     skip: queries.cursor ? 1 : 0,
     cursor: queries.cursor ? { id: queries.cursor } : undefined,
-    orderBy: { createdAt: "desc" },
+    orderBy: queries.orderByScore ? { score: "desc" } : { createdAt: "desc" },
     include: {
       vote: {
         where: queries.requesterId

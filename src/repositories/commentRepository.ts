@@ -37,6 +37,7 @@ const getCommentsWithQueries = async (queries: {
   commentId?: string;
   postId?: string;
   cursor?: string;
+  orderByScore?: string;
 }) => {
   // if having commentId here , we knowing that the main get with queries function is only find one specific comment not all comments of post
   const rootComments = await prisma.comment.findMany({
@@ -49,7 +50,7 @@ const getCommentsWithQueries = async (queries: {
     take: 10,
     skip: queries.cursor ? 1 : 0,
     cursor: queries.cursor ? { id: queries.cursor } : undefined,
-    orderBy: { createdAt: "desc" },
+    orderBy: queries.orderByScore ? { score: "desc" } : { createdAt: "desc" },
     include: {
       children: queries.commentId || queries.authorName ? false : true,
       CommentVote: {
