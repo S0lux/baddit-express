@@ -72,6 +72,7 @@ class PostService {
     communityName?: string;
     cursor?: string;
     postTitle?: string;
+    orderByScore?: string;
   }) {
     try {
       // Get posts with queries

@@ -41,6 +41,11 @@ const router = express.Router();
  *      name: postTitle
  *      schema:
  *        type: string
+ *    - in: query
+ *      name: orderByScore
+ *      schema:
+ *          type: string | undefined
+ *          description: Pass string in here and the result will be ordered by score
  *   responses:
  *    200:
  *     description: Posts retrieved successfully

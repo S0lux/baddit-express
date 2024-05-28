@@ -35,6 +35,7 @@ const getCommentsWithQueries = async (req: Request, res: Response, next: NextFun
   const authorName = req.query.authorName as string | undefined;
   const requesterId = req.user?.id;
   const cursor = req.query.cursor as string | undefined;
+  const orderByScore = req.query.orderByScore as string | undefined;
   try {
     const comments = await commentService.getCommentsWithQueries({
       postId,
@@ -42,6 +43,7 @@ const getCommentsWithQueries = async (req: Request, res: Response, next: NextFun
       requesterId,
       authorName,
       cursor,
+      orderByScore,
     });
     res.status(200).json(reformatters.reformatComments(comments));
   } catch (err) {
