@@ -50,12 +50,10 @@ function reformatPosts(posts: Posts[]) {
 
 function reformatUserCommunities(userCommunities: UserCommunities[]) {
   const formattedUserCommunities = userCommunities.map((data) => ({
-    if(data.community.deleted == false){
-      id: data.communityId,
-      name: data.community.name,
-      role: data.communityRole,
-      banned: data.banned,
-    }
+    id: data.communityId,
+    name: data.community.name,
+    role: data.communityRole,
+    banned: data.banned,
   }));
 
   return formattedUserCommunities;
