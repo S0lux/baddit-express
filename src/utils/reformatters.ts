@@ -52,6 +52,7 @@ function reformatUserCommunities(userCommunities: UserCommunities[]) {
   const formattedUserCommunities = userCommunities.map((data) => ({
     id: data.communityId,
     name: data.community.name,
+    logoUrl: data.community.logoUrl
     role: data.communityRole,
     banned: data.banned,
   }));
