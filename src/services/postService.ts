@@ -11,6 +11,7 @@ import {
 import { postRepository } from "../repositories/postRepositorry";
 import { HttpException } from "../exception/httpError";
 import { APP_ERROR_CODE, HttpStatusCode } from "../constants/constant";
+import { commentRepository } from "../repositories/commentRepository";
 
 const prisma = new PrismaClient();
 
@@ -145,6 +146,7 @@ class PostService {
         throw new HttpException(HttpStatusCode.FORBIDDEN, APP_ERROR_CODE.insufficientPermissions);
       }
       await postRepository.deletePost(postId);
+      await commentRepository.deleteAllComment(postId);
     } catch (err) {
       if (err instanceof HttpException) throw err;
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
@@ -153,7 +155,11 @@ class PostService {
 
   async deleteAllPostsInCommunity(communityName: string) {
     try {
+      var posts = await postRepository.getPostsWithQueries({ communityName: communityName });
       await postRepository.deleteAllPostsInCommunity(communityName);
+      for (const post of posts) {
+        await commentRepository.deleteAllComment(post.id);
+      }
     } catch (err) {
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }
