@@ -171,6 +171,18 @@ const deleteComment = async (commentId: string) => {
   });
 };
 
+const deleteAllComment = async (postId: string) => {
+  return await prisma.comment.updateMany({
+    where: {
+      postId: postId,
+    },
+    data: {
+      deleted: true,
+      updatedAt: new Date(),
+    },
+  });
+};
+
 const findUserVoteState = async (userId: string, commentId: string) => {
   return await prisma.commentVote.findUnique({
     where: { userId_commentId: { commentId, userId } },
@@ -242,6 +254,7 @@ export const commentRepository = {
   createComment,
   getCommentsWithQueries,
   deleteComment,
+  deleteAllComment,
   editTextCommentContent,
   updateCommentScoreBy,
   findUserVoteState,

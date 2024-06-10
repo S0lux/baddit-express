@@ -5,6 +5,7 @@ import { z } from "zod";
 import { postBodyValidator } from "../validators/schemas/postBody";
 import { votePostBodyValidator } from "../validators/schemas/votePostBody";
 import { reformatters } from "../utils/reformatters";
+import commentService from "../services/commentService";
 
 const createPost = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.user!.id;
@@ -47,7 +48,8 @@ const deletePost = async (req: Request, res: Response, next: NextFunction) => {
     }
     // Delete post
     await postService.deletePost(postId, post, user, userCommunityRole);
-
+    //delete all comments of post
+    await commentService.deleteAllCommentOfPost(postId);
     res.status(200).json({ message: "Post deleted" });
   } catch (err) {
     next(err);

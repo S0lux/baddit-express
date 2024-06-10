@@ -102,6 +102,14 @@ class CommentService {
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }
   }
+
+  async deleteAllCommentOfPost(postId: string) {
+    try {
+      await commentRepository.deleteAllComment(postId);
+    } catch (err) {
+      throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
+    }
+  }
   async editTextCommentContent(
     comment: Prisma.CommentGetPayload<{
       include: {
