@@ -98,8 +98,8 @@ const editTextPostContent = async (req: Request, res: Response, next: NextFuncti
   const user = req.user!;
 
   try {
-    const comment = await commentService.getCommentsWithQueries({ commentId });
-    await commentService.editTextCommentContent(comment[0], content, user);
+    const comment = await commentService.getCommentById(commentId);
+    await commentService.editTextCommentContent(comment, content, user);
 
     res.status(200).json({ message: "Comment content updated" });
   } catch (err) {
