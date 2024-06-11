@@ -250,8 +250,17 @@ const editTextCommentContent = async (commentId: string, content: string) => {
   });
 };
 
+const getCommentById = async (commentId: string) => {
+  return await prisma.comment.findUnique({
+    where: {
+      id: commentId
+    }
+  });
+}
+
 export const commentRepository = {
   createComment,
+  getCommentById,
   getCommentsWithQueries,
   deleteComment,
   deleteAllComment,
