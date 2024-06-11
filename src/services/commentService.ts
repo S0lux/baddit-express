@@ -112,19 +112,18 @@ class CommentService {
   }
   async getCommentById(commentId: string) {
     try {
-      return await commentRepository.getCommentById(commentId);
+      const comment =  await commentRepository.getCommentById(commentId);
+      if(comment === null){
+        throw new HttpException(HttpStatusCode.NOT_FOUND, APP_ERROR_CODE.postNotFound);
+      }
+      return comment;
     } catch (err) {
       throw new HttpException(HttpStatusCode.INTERNAL_SERVER_ERROR, APP_ERROR_CODE.serverError);
     }
   }
   
   async editTextCommentContent(
-    comment: Prisma.CommentGetPayload<{
-      include: {
-        CommentVote: { select: { state: true } };
-        author: { select: { avatarUrl: true } };
-      };
-    }>,
+    comment: Comment,
     content: string,
     user: Express.User
   ) {
