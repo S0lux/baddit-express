@@ -93,7 +93,7 @@ const voteComment = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const editTextPostContent = async (req: Request, res: Response, next: NextFunction) => {
-  const commentId = req.params["commentId"];
+  const commentId = req.body.commentId;
   const content = req.body.content;
   const user = req.user!;
 
